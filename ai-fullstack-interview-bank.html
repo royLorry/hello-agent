@@ -1,0 +1,1876 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 全栈工程师面试题库 · 5年经验</title>
+<style>
+  :root{
+    --bg:#f7f8fa; --surface:#ffffff; --border:#e4e7ec; --border-strong:#d0d5dd;
+    --text:#1a1d23; --text-sub:#5b6472; --text-mute:#8b94a3;
+    --accent:#3d5afe; --accent-soft:#eef1ff; --accent-line:#c5cdff;
+    --llm:#3d5afe; --fe:#0f9d76; --be:#d97706; --infra:#7c3aed; --soft:#db2777;
+    --warn:#b45309; --warn-bg:#fff7ed;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    background:var(--bg); color:var(--text); line-height:1.7; font-size:14px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px 80px}
+
+  /* ---------- Header ---------- */
+  header{background:linear-gradient(135deg,#2b3a7c 0%,#3d5afe 60%,#5b7cfa 100%);color:#fff;padding:34px 0 28px;margin-bottom:24px}
+  header .wrap{padding-bottom:0}
+  h1{font-size:26px;font-weight:700;letter-spacing:.5px}
+  .sub{margin-top:8px;opacity:.9;font-size:14px}
+  .meta{margin-top:16px;display:flex;flex-wrap:wrap;gap:8px}
+  .meta span{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.25);
+    padding:4px 11px;border-radius:20px;font-size:12.5px}
+
+  /* ---------- Toolbar ---------- */
+  .toolbar{position:sticky;top:0;z-index:50;background:var(--surface);
+    border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:18px;
+    box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .search-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  #q{flex:1;min-width:220px;padding:9px 13px;border:1px solid var(--border-strong);border-radius:8px;
+    font-size:14px;outline:none;font-family:inherit;background:#fff;color:var(--text)}
+  #q:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  .btn{padding:8px 14px;border:1px solid var(--border-strong);background:#fff;border-radius:8px;
+    cursor:pointer;font-size:13px;font-family:inherit;color:var(--text-sub);white-space:nowrap}
+  .btn:hover{background:#f2f4f7;color:var(--text)}
+  .btn.on{background:var(--accent);border-color:var(--accent);color:#fff}
+
+  .filters{margin-top:12px;display:flex;flex-wrap:wrap;gap:16px}
+  .fgroup{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .flabel{font-size:12px;color:var(--text-mute);margin-right:2px}
+  .chip{padding:4px 11px;border:1px solid var(--border-strong);background:#fff;border-radius:16px;
+    cursor:pointer;font-size:12.5px;color:var(--text-sub);user-select:none;transition:.15s}
+  .chip:hover{border-color:var(--accent);color:var(--accent)}
+  .chip.on{background:var(--accent-soft);border-color:var(--accent-line);color:var(--accent);font-weight:600}
+
+  .statbar{margin:14px 0 6px;font-size:13px;color:var(--text-sub)}
+  .statbar b{color:var(--accent);font-size:15px}
+
+  /* ---------- Question card ---------- */
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+    margin-bottom:10px;overflow:hidden;transition:box-shadow .15s}
+  .card:hover{box-shadow:0 2px 8px rgba(16,24,40,.06)}
+  .card.done{opacity:.62}
+  .card.done .qtext{text-decoration:line-through;text-decoration-color:var(--text-mute)}
+  .qhead{display:flex;gap:12px;padding:14px 16px;cursor:pointer;align-items:flex-start}
+  .num{flex-shrink:0;width:34px;height:24px;display:flex;align-items:center;justify-content:center;
+    font-size:12px;font-weight:700;color:var(--text-mute);background:#f2f4f7;border-radius:6px;margin-top:2px}
+  .qmain{flex:1;min-width:0}
+  .qtext{font-size:14.5px;font-weight:600;line-height:1.6}
+  .qmeta{margin-top:7px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+  .tag{font-size:11.5px;padding:2px 8px;border-radius:5px;background:#f2f4f7;color:var(--text-sub);border:1px solid var(--border)}
+  .tag.cat{color:#fff;border:none;font-weight:600}
+  .cat-llm{background:var(--llm)} .cat-fe{background:var(--fe)} .cat-be{background:var(--be)}
+  .cat-infra{background:var(--infra)} .cat-soft{background:var(--soft)}
+  .tag.diff-基础{background:#ecfdf3;color:#067647;border-color:#a6f4c5}
+  .tag.diff-进阶{background:#fffaeb;color:var(--warn);border-color:#fedf89}
+  .tag.diff-高阶{background:#fef3f2;color:#b42318;border-color:#fecdca}
+  .arrow{flex-shrink:0;color:var(--text-mute);font-size:12px;margin-top:5px;transition:transform .2s}
+  .card.open .arrow{transform:rotate(90deg)}
+
+  .qbody{display:none;border-top:1px dashed var(--border);padding:16px 18px 18px 62px;background:#fcfcfd}
+  .card.open .qbody{display:block}
+  .sec{margin-bottom:16px}
+  .sec:last-child{margin-bottom:0}
+  .sec h4{font-size:12.5px;color:var(--text-mute);font-weight:700;letter-spacing:.6px;margin-bottom:7px;
+    display:flex;align-items:center;gap:6px}
+  .sec h4::before{content:"";width:3px;height:12px;background:var(--accent);border-radius:2px}
+  .sec.intent h4::before{background:var(--text-mute)}
+  .sec.ans h4::before{background:var(--llm)}
+  .sec.follow h4::before{background:var(--be)}
+  .sec.rubric h4::before{background:var(--fe)}
+  .sec p{font-size:13.5px;color:var(--text-sub)}
+  .sec ul{list-style:none}
+  .sec li{font-size:13.5px;color:var(--text-sub);padding-left:16px;position:relative;margin-bottom:6px}
+  .sec li::before{content:"";position:absolute;left:3px;top:10px;width:4px;height:4px;
+    border-radius:50%;background:var(--border-strong)}
+  .sec.ans li{color:var(--text)}
+  .sec.follow li::before{background:var(--be)}
+  .sec.follow li{color:#92400e}
+  code{background:#f2f4f7;padding:1px 5px;border-radius:4px;font-size:12.5px;
+    font-family:"SFMono-Regular",Consolas,monospace;color:#344054;border:1px solid var(--border)}
+
+  .rgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+  .rbox{border:1px solid var(--border);border-radius:8px;padding:10px 12px;background:#fff}
+  .rbox .rt{font-size:11.5px;font-weight:700;margin-bottom:5px;letter-spacing:.3px}
+  .rbox .rd{font-size:12.5px;color:var(--text-sub);line-height:1.65}
+  .rbox.pass .rt{color:var(--be)} .rbox.pass{background:#fffbf5;border-color:#fedf89}
+  .rbox.good .rt{color:var(--fe)} .rbox.good{background:#f6fefb;border-color:#a6f4c5}
+  .rbox.red  .rt{color:#b42318} .rbox.red{background:#fffbfa;border-color:#fecdca}
+  @media(max-width:760px){.rgrid{grid-template-columns:1fr}.qbody{padding-left:18px}}
+
+  .actions{display:flex;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)}
+  .actions .btn{padding:5px 12px;font-size:12.5px}
+  .noresult{text-align:center;padding:60px 20px;color:var(--text-mute)}
+  .to-top{position:fixed;right:24px;bottom:24px;width:42px;height:42px;border-radius:50%;
+    background:var(--accent);color:#fff;border:none;cursor:pointer;font-size:18px;
+    box-shadow:0 4px 14px rgba(61,90,254,.35);display:none;align-items:center;justify-content:center}
+  @media print{
+    header{background:#2b3a7c!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .toolbar,.actions,.to-top{display:none!important}
+    .qbody{display:block!important} .card{break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <h1>AI 全栈工程师 · 面试题库</h1>
+    <div class="sub">面向 5 年经验候选人 · 以 LLM 应用工程为主 · 含参考答案 / 追问链 / 分级评分要点</div>
+    <div class="meta">
+      <span id="mTotal">共 — 题</span>
+      <span>LLM 应用工程 59%</span>
+      <span>全栈工程 33%</span>
+      <span>软技能 8%</span>
+      <span>建议单场 6–8 题 / 60 分钟</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="toolbar">
+    <div class="search-row">
+      <input id="q" type="text" placeholder="搜索题干、知识点、标签…（如 RAG、流式、幂等）">
+      <button class="btn" id="btnExpand">全部展开</button>
+      <button class="btn" id="btnDone">只看未问过</button>
+      <button class="btn" id="btnReset">清空标记</button>
+      <button class="btn" onclick="window.print()">打印</button>
+    </div>
+    <div class="filters">
+      <div class="fgroup"><span class="flabel">模块</span>
+        <span class="chip on" data-f="cat" data-v="">全部</span>
+        <span class="chip" data-f="cat" data-v="LLM应用工程">LLM应用工程</span>
+        <span class="chip" data-f="cat" data-v="前端">前端</span>
+        <span class="chip" data-f="cat" data-v="后端与数据">后端与数据</span>
+        <span class="chip" data-f="cat" data-v="架构与运维">架构与运维</span>
+        <span class="chip" data-f="cat" data-v="软技能">软技能</span>
+      </div>
+      <div class="fgroup"><span class="flabel">难度</span>
+        <span class="chip on" data-f="diff" data-v="">全部</span>
+        <span class="chip" data-f="diff" data-v="基础">基础</span>
+        <span class="chip" data-f="diff" data-v="进阶">进阶</span>
+        <span class="chip" data-f="diff" data-v="高阶">高阶</span>
+      </div>
+      <div class="fgroup"><span class="flabel">题型</span>
+        <span class="chip on" data-f="type" data-v="">全部</span>
+        <span class="chip" data-f="type" data-v="概念">概念</span>
+        <span class="chip" data-f="type" data-v="设计">设计</span>
+        <span class="chip" data-f="type" data-v="排障">排障</span>
+        <span class="chip" data-f="type" data-v="编码">编码</span>
+        <span class="chip" data-f="type" data-v="开放">开放</span>
+      </div>
+      <div class="fgroup"><span class="flabel">子域</span>
+        <span class="chip on" data-f="sub" data-v="">全部</span>
+        <span class="chip" data-f="sub" data-v="提示与上下文">提示与上下文</span>
+        <span class="chip" data-f="sub" data-v="RAG">RAG</span>
+        <span class="chip" data-f="sub" data-v="Agent">Agent</span>
+        <span class="chip" data-f="sub" data-v="训练与评测">训练与评测</span>
+        <span class="chip" data-f="sub" data-v="推理与成本">推理与成本</span>
+        <span class="chip" data-f="sub" data-v="AI架构">AI架构</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="statbar">当前筛选：<b id="sCount">0</b> 题 · <span id="sHint"></span></div>
+  <div id="list"></div>
+  <div class="noresult" id="empty" style="display:none">没有匹配的题目，试试换个关键词。</div>
+</div>
+
+<button class="to-top" id="toTop">↑</button>
+
+<script>
+const DATA = [
+/* ============ A. 提示工程与上下文工程 ============ */
+{cat:"LLM应用工程",sub:"提示与上下文",diff:"进阶",type:"概念",tags:["上下文工程","长对话"],
+ q:"什么是上下文工程（Context Engineering）？它和提示工程有什么区别？在一个长对话 AI 应用中你会如何管理上下文窗口？",
+ intent:"区分「只会写提示词」和「能把上下文当资源来工程化治理」的候选人。5 年经验必须能讲到预算分配与压缩策略。",
+ ans:[
+  "提示工程关注的是「怎么把指令写好」，是单点技巧；上下文工程关注的是「在有限的 token 预算里，动态地放入哪些信息、按什么顺序放、什么时候丢弃」，是系统性问题。",
+  "上下文预算通常拆成几块：系统指令、工具定义、检索到的知识、历史对话、当前用户输入、输出预留。每块给一个配额，超出就触发降级。",
+  "历史对话管理常见策略：滑动窗口（保留最近 N 轮）+ 摘要压缩（把更早的对话用便宜的小模型压成 summary）+ 关键信息抽取（把用户偏好、已确认的事实固化成结构化字段常驻）。",
+  "顺序上遵循「首尾效应」：把关键指令放开头或结尾，把大块检索内容放中间容易丢失的位置反而不利，实践中会用重排把高相关内容放到首尾。",
+  "工程化手段：给每条上下文打「来源 + 时间戳 + 优先级」，超预算时按优先级淘汰；对检索结果先做压缩/去重再入窗；把上下文组装逻辑抽成独立模块，便于 A/B 和观测。",
+  "要能被观测：每次请求记录各段 token 占用、被截断的部分、压缩前后的差异，否则线上出现「答非所问」时无法定位。"
+ ],
+ follow:[
+  "你的摘要压缩用哪个模型做？压缩出错导致信息丢失怎么兜底？",
+  "如果用户输入本身就超过上下文窗口（比如贴了一本书），怎么处理？",
+  "滑动窗口和摘要压缩，你怎么评估该在多少轮之后启用压缩？"
+ ],
+ pass:"能说清提示工程与上下文工程的层次差异，知道滑动窗口和摘要两种手段。",
+ good:"能给出完整的预算分配框架、淘汰优先级、压缩降级链路，并强调可观测（各段 token 占用可追踪）和「压缩本身会引入失真」的权衡。",
+ red:"只谈提示词模板和 few-shot，完全没有 token 预算、淘汰、压缩的概念；或认为「上下文越大越好，直接上长上下文模型就行」。"},
+
+{cat:"LLM应用工程",sub:"提示与上下文",diff:"进阶",type:"排障",tags:["结构化输出","JSON Schema"],
+ q:"如何保证 LLM 稳定输出符合 JSON Schema 的结果？线上遇到非法 JSON 你怎么兜底？",
+ intent:"考察工程健壮性。AI 全栈必须处理模型的「非确定性输出」，这是和传统后端最大的差别之一。",
+ ans:[
+  "第一优先级用原生能力：JSON Mode / Structured Output（约束解码 / grammar-based decoding），让模型在解码阶段就被语法约束，几乎不可能产出非法结构。这是最省事也最可靠的方案。",
+  "Schema 设计要「迁就模型」：字段扁平化、层级不超过 2–3 层、字段名语义清晰、给字段加 description、必填字段尽量少、枚举值明确列出。复杂嵌套 schema 的失败率显著上升。",
+  "兜底分层：① 清洗（去掉 ```json 围栏、BOM、前后废话、尾随逗号）；② 修复（json_repair 类库自动补括号/引号）；③ 重试（把错误信息回喂给模型让它自我修正，通常 1 次重试能救回 90%）；④ 降级（切到更强模型，或走规则/兜底文案）。",
+  "不要只校验 JSON 合法性，还要校验业务 schema（字段缺失、类型不符、枚举越界）。用 zod / pydantic 做运行时校验，失败进重试队列。",
+  "边界情况：模型在字符串里输出真实换行、输出超大数组撑爆下游、输出与你 schema 同构但语义错误（合法但不对）——后者只能靠评测集覆盖。",
+  "可观测：统计结构化失败率按模型/提示词版本/时间三个维度，作为模型升级和提示词改版的回归指标。"
+ ],
+ follow:[
+  "自我修正重试会不会让延迟翻倍？你怎么平衡？",
+  "如果需要输出的是流式 JSON（边生成边渲染），怎么做增量解析？",
+  "约束解码开启后，模型回答质量有下降吗？你观察到过吗？"
+ ],
+ pass:"知道 JSON Mode 和重试修复，能说出清洗和重试两层兜底。",
+ good:"能分层讲「约束解码 → 清洗 → 修复 → 自我修正重试 → 模型降级」的完整链路，区分 JSON 合法性与业务 schema 校验，并提出失败率指标。",
+ red:"只说「用正则提取」或「让模型输出 JSON 就行了」，没有失败率概念和降级路径；或不知道有 structured output 这类原生能力。"},
+
+{cat:"LLM应用工程",sub:"提示与上下文",diff:"进阶",type:"设计",tags:["提示词管理","灰度","版本控制"],
+ q:"线上有 50+ 个提示词，你会如何做版本控制、灰度发布、A/B 实验和快速回滚？",
+ intent:"考察把提示词当「生产资产」而非「字符串常量」来管理的工程意识，这是 AI 应用规模化后的必答题。",
+ ans:[
+  "提示词必须外置：存到 DB/配置中心/Git，带唯一 key、版本号、变量定义、绑定的模型与参数（temperature、max_tokens）、负责人、变更说明。代码里只引用 key+version，绝不硬编码。",
+  "版本是不可变的（immutable）：改提示词产生新版本而不是覆盖，发布时切换「环境 → 指向哪个版本」的指针，这样回滚就是改指针，秒级生效且不需要重新发版。",
+  "灰度维度：按租户、按用户 ID 哈希、按流量百分比、按内部账号白名单。AI 场景尤其需要「影子流量」——新提示词并行跑但不返回给用户，只收集指标对比。",
+  "A/B 必须有指标：离线先看评测集通过率，再看线上的任务成功率、用户点踩率、平均轮次、单次成本、P95 延迟。只比「感觉哪个更好」是不可接受的。",
+  "提示词变更也要走 CI：改了之后自动跑一遍回归评测集（至少 100–300 条），通过率下降超过阈值就卡住，不允许直接上线。",
+  "每次 LLM 调用的 trace 里打上 prompt_key + version，这样才能把线上 badcase 归因到具体提示词版本——这是最容易被忽略但最值钱的一环。"
+ ],
+ follow:[
+  "灰度期间发现新提示词成本涨了 40% 但成功率只涨 2%，你怎么决策？",
+  "提示词和代码版本怎么对齐？模型换了一版，提示词要不要跟着改？",
+  "你怎么防止「改了 A 场景的提示词，把 B 场景搞坏了」？"
+ ],
+ pass:"知道提示词要外置、要有版本号、要能回滚。",
+ good:"能给出「不可变版本 + 环境指针 + 影子流量 + 回归评测卡点 + trace 打标」的完整体系，并讲清离线评测与线上指标的关系。",
+ red:"提示词写在代码字符串里；回滚靠重新部署；没有回归评测；线上出问题无法定位是哪个提示词版本导致的。"},
+
+{cat:"LLM应用工程",sub:"提示与上下文",diff:"基础",type:"概念",tags:["幻觉","可控性"],
+ q:"大模型幻觉（Hallucination）从产品侧和工程侧分别怎么降低？举一个你实际做过的例子。",
+ intent:"基础题，但要听出候选人是否理解「幻觉无法根除，只能管控」这个前提。",
+ ans:[
+  "前提要摆正：幻觉是生成式模型的固有属性，无法彻底消除。工程目标是把幻觉从「静默错误」变成「可被检测、可被约束、影响可控」。",
+  "工程侧：① RAG 提供事实 grounding，并在提示词中明确「只依据给定资料回答，资料中没有就说不知道」；② 强制引用，要求每个结论标注来源 chunk id，前端可点击溯源；③ 结构化输出 + 业务规则校验（如数值范围、枚举、与数据库一致性校验）；④ 用 NLI/事实一致性模型做二次校验打分，低分走人工或降级。",
+  "产品侧：① 显式展示引用来源，让用户自己能验证；② 给置信度提示与「未找到答案」的明确兜底文案，而不是硬编；③ 高风险场景（医疗、法务、财务）加人工复核环节；④ 提供一键反馈入口，把 badcase 回流成评测集。",
+  "最容易被忽略的是「不知道就说不知道」的能力：需要在提示词里显式允许拒答，并在评测集中包含「应拒答」的用例，否则模型会为了讨好而编造。",
+  "度量：建立 faithfulness（忠实度）指标，抽样人工标注或用大模型做 judge，持续跟踪而不是一次性检查。"
+ ],
+ follow:[
+  "用大模型当裁判（LLM-as-judge）来评幻觉，怎么保证裁判本身可信？",
+  "用户就是想要一个答案，你拒答了，产品经理来投诉，你怎么处理？",
+  "引用溯源显示的是 chunk，但 chunk 本身切得不好，溯源还有意义吗？"
+ ],
+ pass:"能说出 RAG、引用溯源、提示词约束拒答这几种手段。",
+ good:"能区分工程侧与产品侧分层治理，强调「允许拒答 + 应拒答用例入评测集」，并提出 faithfulness 的持续度量方式。",
+ red:"认为换更大模型/调低 temperature 就能解决幻觉；或声称「我们做了 RAG 之后就没有幻觉了」。"},
+
+{cat:"LLM应用工程",sub:"提示与上下文",diff:"高阶",type:"设计",tags:["Lost in the middle","长上下文","检索重排"],
+ q:"长上下文模型的「Lost in the Middle」现象是什么？在多轮 + 多文档场景下你如何缓解？",
+ intent:"高阶区分题。考察是否真的做过长上下文应用，而不是只看过论文标题。",
+ ans:[
+  "现象：模型对长上下文首尾位置的内容注意力强，对中间部分显著弱化。当检索回 20 个 chunk 平铺进提示词时，真正关键的第 9 个 chunk 可能完全没被用上。",
+  "缓解一（减少数量）：不要「检索多少就塞多少」。先用 rerank 精排只取 top 3–5，宁缺毋滥；用相似度阈值截断低相关 chunk；对同一文档的相邻 chunk 做合并，减少碎片。",
+  "缓解二（调整位置）：重排时把最相关的放开头和结尾，次相关的放中间；系统指令放最前，用户问题同时在最前和最后各出现一次（ sandwich 结构）。",
+  "缓解三（结构化呈现）：给每个 chunk 加编号与标题（如 [Doc3] 2024报销标准 · 第2节），让模型能在回答时引用编号；实验表明带清晰标识的片段召回利用率更高。",
+  "缓解四（先压缩再入窗）：对长文档先做 query-focused 摘要或抽取，把 30k token 压到 3k 再入窗，比直接塞进去有效得多。",
+  "验证方法：构造「答案埋在中间位置」的测试集，统计不同位置下的命中率，画位置-准确率曲线来量化问题，而不是凭感觉。"
+ ],
+ follow:[
+  "你们实测过位置-准确率曲线吗？拐点大概在第几个 chunk？",
+  "重排 top-k 取多少？取少了漏召回，取多了中间丢失，你怎么定这个数？",
+  "如果直接上 1M 上下文的模型，这个问题还存在吗？"
+ ],
+ pass:"知道「中间内容容易被忽略」，能说出减少 top-k 和重排位置两种手段。",
+ good:"能给出数量/位置/结构/压缩四个层面的组合打法，并用「位置-准确率曲线」这种量化方式验证效果，而不是照搬论文结论。",
+ red:"没听过这个现象；或只回答「用长上下文模型解决」；或认为 rerank 只是提升排序精度，与位置效应无关。"},
+
+{cat:"LLM应用工程",sub:"提示与上下文",diff:"进阶",type:"设计",tags:["提示词模板","few-shot","多语言"],
+ q:"设计一个可复用的提示词模板系统：支持变量注入、少样本动态选择、多语言、多模型适配。",
+ intent:"考察抽象能力和平台化思维。5 年经验应该能做出被多个业务线复用的东西。",
+ ans:[
+  "模板层：用 Jinja2 / Mustache / Handlebars 做变量渲染，但必须做转义与白名单——用户输入直接拼进提示词就是提示注入的入口。变量要区分「可信变量」（系统生成）和「不可信变量」（用户输入），后者要隔离包裹并声明为数据。",
+  "少样本动态选择：不要固定写死几个示例。做法是把示例库向量化，运行时按当前 query 相似度检索 top-k 示例动态拼入；同时保证示例的多样性和标签均衡（避免全是同一类）。",
+  "多语言：分离「指令语言」和「内容语言」。模板按语言维护多份（或用翻译层），检索的示例与知识也要按语言过滤。注意：同一份中文提示词机翻成英文后效果常常变差，需要人工校对关键模板。",
+  "多模型适配：把模型差异（系统消息是否支持、函数调用格式、停止词、上下文长度）抽象成 adapter 层，模板只写一份中间表示，由 adapter 渲染成各厂商格式。这样换模型不用改 50 个提示词。",
+  "配套能力：渲染结果的长度预估（超窗自动降级）、变量缺失的检测、模板 lint（禁止在模板里写死业务常量）、渲染快照存档（便于复现线上问题）。",
+  "治理：模板有 owner、有变更记录、有绑定的回归评测集，避免谁都能改。"
+ ],
+ follow:[
+  "用户输入拼进模板，怎么防提示注入？",
+  "动态 few-shot 检索本身要花一次向量检索，延迟值得吗？",
+  "换模型时 adapter 层处理不了的差异有哪些？举个例子。"
+ ],
+ pass:"能讲出变量渲染、示例库、多语言三套模板的基本做法。",
+ good:"能抽象出 adapter 层屏蔽模型差异、区分可信/不可信变量防注入、动态 few-shot 检索，并补齐长度预估与渲染快照等工程细节。",
+ red:"把提示词当字符串拼接地做；没有防注入意识；每个模型维护一套完全独立的提示词副本。"},
+
+/* ============ B. RAG ============ */
+{cat:"LLM应用工程",sub:"RAG",diff:"基础",type:"概念",tags:["RAG","链路拆解"],
+ q:"把一次 RAG 问答的完整链路拆开讲一遍，并说明质量瓶颈通常出现在哪几个环节。",
+ intent:"最基础的 RAG 全貌题。5 年经验应能不假思索地拆出 offline/online 两段，并指出真实瓶颈。",
+ ans:[
+  "离线链路（索引期）：文档接入 → 解析（PDF/Word/HTML/表格/图片）→ 清洗 → 切分（chunking）→ 向量化（embedding）→ 写入向量库（同时保留原文与元数据）→ 可能还有摘要/关键词/知识图谱等增强索引。",
+  "在线链路（查询期）：Query 理解与改写 →（可选）多路召回：向量检索 + 关键词 BM25 + 结构化过滤 → 融合去重 → Rerank 精排 → top-k 截取与上下文组装 → 拼入提示词 → LLM 生成 →（可选）引用标注与后校验。",
+  "真正的瓶颈往往不在「向量模型不够强」，而在：① 解析环节——PDF 表格、多栏排版、扫描件解析错了，后面全白搭；② 切分环节——chunk 切碎了语义不完整；③ query 改写缺失——用户问的是口语/代词指代，「它多少钱」这种直接检索必挂；④ 召回漏了——top-k 里根本没有正确文档，rerank 再强也没用。",
+  "定位方法：分段埋点。离线看「解析成功率、chunk 语义完整度」；在线看「正确文档是否在召回 top-20 内（召回率）」和「是否在 rerank top-5 内（精排准确率）」。先确认是召回问题还是重排问题，再针对性优化。",
+  "如果正确文档连 top-20 都没进，调 rerank 是浪费时间；如果 top-20 里有但 top-5 里没有，才该优化 rerank。这个判断顺序是 RAG 调优的核心方法论。"
+ ],
+ follow:[
+  "你怎么定义和计算「召回率」？没有标注数据怎么办？",
+  "正确文档在 top-20 但总排第 18，你会动哪一段？",
+  "解析环节你怎么验证质量？有没有量化的手段？"
+ ],
+ pass:"能完整说出离线/在线两段的主要步骤。",
+ good:"能指出瓶颈在解析/切分/query改写/召回四处的实战经验，并给出「先看召回再看精排」的分段定位方法论。",
+ red:"只说「文档切块 → 向量化 → 检索 → 生成」四句话；或认为效果不好就换更好的 embedding 模型。"},
+
+{cat:"LLM应用工程",sub:"RAG",diff:"进阶",type:"设计",tags:["Chunking","切分策略"],
+ q:"Chunking 策略怎么选？固定长度、递归切分、语义切分、按文档结构切分分别适用什么场景？chunk size 如何确定？",
+ intent:"考察是否真的做过知识库调优，还是照抄别人的 512/1024。",
+ ans:[
+  "按文档结构切分（标题层级、段落、表格行）效果通常最好，因为保留了语义边界；适用于有清晰结构的文档（制度、手册、API 文档、Wiki）。",
+  "递归字符切分（RecursiveCharacterTextSplitter）是通用兜底：按 \n\n → \n → 。 → ，逐级降级切，尽量不断句，适合结构混乱的长文本。",
+  "固定长度 + overlap 最简单但最容易切断语义，只适合作为 baseline 或处理无结构文本。overlap 一般取 chunk size 的 10%–20%，用于缓解跨块信息断裂。",
+  "语义切分（按相邻句子 embedding 相似度断裂点切）：效果上限高但成本也高（要额外算 embedding、阈值难调、耗时），适合对质量要求极高、文档量可控的场景。",
+  "chunk size 没有魔法数字，取决于：模型上下文窗口、单 chunk 需要承载的完整语义单元大小、检索 top-k 数量。常见区间 300–800 token。要按文档类型分：FAQ 类可以一问一答一个 chunk（很短），制度类按章节（较长）。",
+  "定 size 的方法：构造评测集，跑 256/512/1024 几档对比召回率与最终答案质量，选拐点。同时看「单 chunk 是否自包含」——抽 50 个 chunk 人工看，读不懂的占比越高说明切得越碎。",
+  "增强手段：给每个 chunk 加上所属标题路径作为前缀（如「第三章 > 报销标准 > 差旅」），这一步对小 chunk 的效果提升非常明显；表格类单独处理，不要按字符切开表格。"
+ ],
+ follow:[
+  "加了标题前缀之后召回率提升了多少？怎么测的？",
+  "表格被切断了怎么办？",
+  "同一段落被切进两个 chunk，检索只召回其中一个，怎么处理？"
+ ],
+ pass:"能说出几种切分方式和各自的适用场景，知道 overlap 的作用。",
+ good:"能给出「按文档类型差异化切分 + 标题路径前缀 + 小模型/大模型摘要增强 + 用评测集跑档位拐点」的组合方案，并强调表格要特殊处理。",
+ red:"直接报「512 重叠 50」这种抄来的数字且说不出依据；或认为切分越细越好。"},
+
+{cat:"LLM应用工程",sub:"RAG",diff:"进阶",type:"概念",tags:["混合检索","RRF","BM25"],
+ q:"为什么要用混合检索（BM25 + 向量）？多路结果怎么融合？RRF 是什么，权重怎么调？",
+ intent:"RAG 效果调优的分水岭题。纯向量检索在真实业务里几乎必然不够。",
+ ans:[
+  "纯向量检索的短板：对精确匹配无能为力。用户搜「错误码 E2043」「型号 XT-900」「《员工手册》第 3.2 条」这类专有名词、编号、缩写，语义向量会返回一堆语义相近但完全不对的结果。而 BM25 对这类词命中极准。",
+  "纯 BM25 的短板：无法处理同义、改写、口语化表达。用户问「怎么报销打车费」，文档写的是「交通费用报销规范」，字面重合度低，BM25 召回不到。",
+  "所以混合检索是互补：向量负责「语义召回」，关键词负责「精确召回」，两路取并集能显著提升召回率上限。",
+  "融合方式：① RRF（Reciprocal Rank Fusion）—— 只利用排名位置，score = Σ 1/(k + rank_i)，k 通常取 60。优点是不需要归一化各路的分数（向量相似度和 BM25 分数量纲完全不同，直接加权很难调），鲁棒性最好，是首选。② 加权分数融合——需要把两路分数归一化到同一区间（min-max 或 rank-based），可以按 query 类型动态调整权重。",
+  "调权重的方法：构造带标注的评测集，对比「纯向量 / 纯 BM25 / RRF / 加权 0.3:0.7 / 0.5:0.5」等配置的 recall@5 与 nDCG。不要用拍脑袋的固定值。",
+  "进阶：query 路由——识别 query 里是否含编号、专有名词、精确引用，有就提高 BM25 权重；是自然语言问句就提高向量权重。这个路由可以用小模型或规则实现。"
+ ],
+ follow:[
+  "RRF 里的 k=60 是怎么来的？改大改小有什么影响？",
+  "两路召回结果重复了怎么处理？",
+  "除了向量和 BM25，你还会加第三路召回吗？（如同义词词典、知识图谱、SQL）"
+ ],
+ pass:"知道向量和关键词是互补的，能说出加权融合。",
+ good:"能讲清两种检索各自的失效场景，理解 RRF 相比加权融合的优势（免归一化），并能用评测集量化调参、提到 query 路由。",
+ red:"只做向量检索且认为够用；或把向量相似度和 BM25 分数直接相加做加权，说不出归一化的必要性。"},
+
+{cat:"LLM应用工程",sub:"RAG",diff:"进阶",type:"设计",tags:["向量数据库","选型"],
+ q:"向量数据库怎么选型？PGVector、Milvus、Qdrant、Elasticsearch 各自适用什么规模？",
+ intent:"考察选型能力，而非跟风。5 年经验要能从数据量、团队、运维成本综合判断。",
+ ans:[
+  "先说结论：绝大多数团队（千万级向量以内）PGVector 就够了，别一上来就上 Milvus。选型的隐性成本是运维复杂度和团队熟悉度，这部分常被低估。",
+  "PGVector：数据量 ≤ 千万级、QPS 不高、已在使用 Postgres 的团队首选。优势是能和业务数据同库做 JOIN、事务一致、运维成本几乎为零。劣势是超大规模和高并发下性能与扩展性有限，HNSW 索引内存占用较大。",
+  "Qdrant：独立的向量数据库，Rust 实现，资源占用友好，支持丰富的元数据过滤（payload filter），部署简单，适合百万到亿级、需要完善过滤能力的场景。",
+  "Milvus：面向亿级以上、高吞吐的生产级场景，支持分布式、多种索引类型、GPU 加速，但运维复杂度显著更高（依赖 etcd、MinIO 等组件），需要专门人力。",
+  "Elasticsearch（dense_vector + kNN）：已有 ES 技术栈的团队价值最大——可以天然把关键词检索和向量检索放在一次查询里完成，混合检索实现最省事；向量性能不如专用库，但对中等规模完全够用。",
+  "选型维度清单：数据规模（向量条数 × 维度）、QPS 与延迟要求、是否需要强元数据过滤、是否需要混合检索、是否要事务/与业务库一致性、团队现有栈、托管 vs 自建、成本。",
+  "额外要点：HNSW 与 IVF 的取舍（HNSW 查询快、内存大、构建慢；IVF 内存小、需要训练、召回率靠 nprobe 调）；过滤方式选 pre-filter 还是 post-filter 会显著影响召回率，要实测。",
+  "架构建议：把向量访问抽成 Repository 层，选型可替换，避免业务代码和 Milvus SDK 深度耦合，将来迁移不至于伤筋动骨。"
+ ],
+ follow:[
+  "从 PGVector 迁到 Milvus 的触发条件是什么？你会在什么量级开始做准备？",
+  "元数据过滤导致召回变差（过滤后候选不足），怎么处理？",
+  "HNSW 的 ef_search / M 参数怎么调？调了有什么副作用？"
+ ],
+ pass:"能说出 PGVector 适合中小规模、Milvus 适合大规模，知道 HNSW 索引。",
+ good:"能按规模给出明确分档建议，把运维成本和团队栈纳入决策，讲清 pre/post-filter 与索引参数取舍，并提出可替换的抽象层。",
+ red:"不管什么场景都说上 Milvus；或说不出任何选型依据，只说「业界主流方案」。"},
+
+{cat:"LLM应用工程",sub:"RAG",diff:"进阶",type:"设计",tags:["Embedding","模型选型","中文"],
+ q:"Embedding 模型怎么选、怎么评估？中文场景有哪些常见的坑？",
+ intent:"考察评估方法论。很多人只会说「用 bge」，说不出为什么和怎么验。",
+ ans:[
+  "选型维度：语言支持（中英双语 vs 纯英文）、维度（1024 vs 768 vs 384，直接影响存储与检索速度）、最大输入长度（能覆盖你的 chunk 长度）、是否支持指令前缀（如 bge 的「为这个句子生成表示：」）、是否支持 Matryoshka（可截断维度）、许可协议。",
+  "中文常见坑：① 很多开源模型中文语料不足，中英混合、中数混排效果差；② 中文分词不是问题，但「语义相近字面不同」的成语、行业黑话、内部缩写容易被当成不相关；③ 查询词很短（「报销」）而文档很长，短句-长文档的向量空间不对齐，需要非对称检索能力（bge 的 query/passage 前缀就是解决这个）；④ 多音字、同形词、简繁体；⑤ 公司内部术语、产品名、人名，通用模型基本没见过，必须靠微调或混合检索兜底。",
+  "评估方法（核心）：不要看公开榜单（MTEB）直接选——榜单和你的业务分布往往不一致。要构造自己的评测集：从真实日志里抽 200–500 条 query，人工或用 LLM 标注相关文档，然后算 recall@5 / recall@20 / nDCG@10 / MRR。",
+  "评估还要注意：测「难负例」——语义相近但答案不同的文档（如「差旅报销标准」vs「差旅报销标准（2023旧版）」），通用榜单不考这个，但这才是真实线上最难的部分。",
+  "落地建议：先跑 3–4 个候选模型（bge-m3、bge-large-zh、gte、Conan、Cohere/BGE 商业版）对比；如果 top-3 差距在 3% 以内，选更快更便宜的而不是分数最高的。",
+  "别忘了 rerank：embedding 负责召回（要快、要全），rerank 负责精排（cross-encoder，要准）。两者是不同角色，不要用 embedding 相似度去承担精排职责。"
+ ],
+ follow:[
+  "你的业务评测集怎么构造的？标注从哪来？",
+  "换 embedding 模型意味着全量重建索引，你怎么低风险地做这件事？",
+  "什么时候该微调 embedding 模型？"
+ ],
+ pass:"知道几个主流中文 embedding 模型，知道要用评测集评估。",
+ good:"能给出自建评测集 + 难负例的完整评估方法，讲清中文特有的短查询长文档、内部术语等坑，并明确区分 embedding 与 rerank 的职责。",
+ red:"直接引用 MTEB 榜单分数当结论；或完全没做过自有评测集，效果全靠人工感觉。"},
+
+{cat:"LLM应用工程",sub:"RAG",diff:"进阶",type:"设计",tags:["Rerank","两阶段检索"],
+ q:"Rerank 的必要性是什么？代价是什么？两阶段检索的阈值怎么定？",
+ intent:"考察对「召回-精排」两段式架构的理解深度，以及成本意识的平衡。",
+ ans:[
+  "为什么需要：向量检索是双塔（bi-encoder），query 和 doc 各自独立编码成向量再比相似度，速度快但交互浅、精度有限。Rerank 用 cross-encoder 把 query 和 doc 拼在一起过一遍模型，能做深度交互，精度显著更高。代价是慢——必须对每个候选单独算一遍，无法预计算。",
+  "所以标准架构是两阶段：第一阶段用向量/关键词「广撒网」召回 top-50～100（快、成本低、要求高召回率）；第二阶段 rerank 精排出 top-3～5（慢、贵、要求高精度）。用便宜的手段保证不漏，用贵的手段保证排序准。",
+  "代价量化：rerank 通常增加 50–300ms 延迟，且候选数越多越慢。如果候选 100 个、rerank 单条 10ms 就是 1s，不可接受。所以候选数要卡住，一般 20–50。",
+  "阈值设定：① 相似度截断——向量相似度低于某值（如 0.5）的候选直接丢弃，不进 rerank，既省时间又减少噪声；② rerank 分数截断——精排后低于阈值的文档不进上下文，宁可少给也不要塞噪声（噪声会显著增加幻觉）；③ 兜底——top-1 都没过阈值，就走「未找到」分支或转成联网/人工。",
+  "阈值怎么定：用评测集画 P-R 曲线，看「召回率随阈值下降」和「噪声率随阈值上升」的交叉点。没有标注数据的粗办法：抽样 100 条线上 query，人工看 top-5 里有多少条是相关的，反推一个能接受的分数下界。",
+  "工程细节：rerank 服务要单独部署（GPU），做好批处理攒批以提升吞吐；rerank 模型挂了要能降级成「直接用向量相似度排序」，而不能整个问答不可用——这是必备的熔断降级路径。"
+ ],
+ follow:[
+  "rerank 服务超时了，你降级成什么？降级后效果掉多少，能接受吗？",
+  "候选 100 个降不下来，但 rerank 太慢，还有什么办法提速？",
+  "rerank 分数阈值定高了漏召回、定低了引入噪声，你怎么平衡？"
+ ],
+ pass:"知道 rerank 是 cross-encoder，精度高但慢，所以只用于精排 top-k。",
+ good:"能讲清两阶段各自的指标目标（召回率 vs 精度）、给出量化代价与候选数建议、说明阈值的标定方法和降级路径。",
+ red:"认为 rerank 是可选的锦上添花；或对所有候选（几百上千条）都做 rerank，完全没有延迟和成本概念。"},
+
+{cat:"LLM应用工程",sub:"RAG",diff:"高阶",type:"设计",tags:["多模态RAG","文档解析","OCR"],
+ q:"表格、图片、扫描件 PDF 怎么做 RAG？多模态 RAG 的落地形态有哪几种？",
+ intent:"真实企业知识库必然遇到非纯文本文档，这是区分「做过 demo」和「做过生产」的分水岭。",
+ ans:[
+  "先说核心认知：这类问题的难点 90% 在「解析（Parsing）」而不是检索。垃圾进、垃圾出，解析错了后面所有优化都白做。",
+  "PDF 解析分层：① 文本型 PDF 用 pdfplumber / PyMuPDF 提取文字与坐标，关键是还原阅读顺序（多栏排版直接按行提取会错乱）；② 表格要单独识别（表格结构识别 TSAR 任务），输出 HTML/Markdown 表格而不是纯文本，否则行列关系全丢；③ 扫描件必须走 OCR（PaddleOCR / Tesseract / 商业 OCR），还要处理旋转、倾斜、水印、印章遮挡。",
+  "表格的 RAG 策略：常见做法是「表格整体作为一个 chunk 存原文 + 用 LLM 生成一段表格摘要一起存」，检索时命中摘要或原文，生成阶段把完整表格 Markdown 给模型。另一种是把表格转结构化数据入 SQL 库，用 text-to-SQL 查询（适合数值型、需要聚合计算的场景，如「去年 Q3 销售额」）。",
+  "图片处理：① 给图片配文字说明（用多模态模型生成 caption / 用 OCR 提取图中文字），把 caption 作为可检索文本；② 保存图片 URL，检索命中后在生成阶段把原图一起交给多模态模型；③ 图表类（柱状图、折线图）建议转成结构化数据 + 文字描述双索引，因为直接让模型「看图读数」准确率很差。",
+  "多模态 RAG 的三种落地形态：A) 模态转文本（把图片/表格转成文本后走传统文本 RAG，最实用、成本最低、兼容性最好，优先选这个）；B) 多模态 embedding（如 CLIP / 国产多模态向量模型，图文同空间检索，适合以图搜图）；C) 端到端多模态生成（检索到的原文图直接喂给多模态大模型，效果最好但成本和延迟最高）。",
+  "质量保障：解析环节必须有可量化的质检——比如「表格行列数是否与原文一致」「OCR 置信度低于阈值的页面标记待人工」「解析后文本长度异常（过短/为空）告警」。把解析失败率作为一个正式指标来盯，而不是等用户投诉。"
+ ],
+ follow:[
+  "一个 200 页的 PDF，你怎么验证解析质量？逐页人工看吗？",
+  "表格转 SQL 和表格转 Markdown 给模型，你什么时候选哪个？",
+  "多模态大模型直接读图，和 OCR + 文本 RAG 相比，你们实测差多少？成本差多少？"
+ ],
+ pass:"知道扫描件要 OCR、表格要特殊处理，能说出给图片生成 caption 再检索。",
+ good:"能明确指出瓶颈在解析环节，给出表格「摘要+原文双索引」和「转 SQL」的分流策略，讲清多模态 RAG 三种形态的取舍，并提出解析质检指标。",
+ red:"没处理过非纯文本文档，回答停留在「把所有文档切块向量化」；或认为直接把图片丢给多模态模型就行。"},
+
+{cat:"LLM应用工程",sub:"RAG",diff:"高阶",type:"设计",tags:["RAG评测","RAGAS","评测集"],
+ q:"RAG 系统怎么评估？RAGAS / TruLens 这些指标如何真正落地？评测集怎么从 0 建起来？",
+ intent:"5 年经验的核心区分题。没做过评测体系的团队，AI 应用永远在「拍脑袋调优」。",
+ ans:[
+  "先分层评估，不要混在一起：① 检索层指标（脱离生成单独评）：Recall@k、MRR、nDCG，需要 query-doc 相关性标注；② 生成层指标：Faithfulness（忠实度，答案是否都能被给定上下文支持）、Answer Relevancy（答案是否回应了问题）、Context Precision/Recall（上下文的精准与充分度）。",
+  "RAGAS 这类框架的价值是「用 LLM 当裁判自动生成指标」，解决了冷启动没标注的问题。但必须知道它的局限：裁判模型本身有偏差（偏好长答案、偏好与自己风格一致的输出）、评分不稳定（同一条跑两次可能不同分）、成本不低（评测 500 条可能要跑几千次 LLM 调用）。",
+  "裁判可信度校准：抽 50–100 条做人工标注，把 LLM 裁判的分数和人工分数做相关性分析（Spearman / Cohen's kappa），相关性低于 0.6 说明裁判不可用，需要换模型或改 prompt。这一步绝大多数团队不做，导致指标自欺欺人。",
+  "评测集从 0 到 1 的三条来源：① 从真实用户日志抽样（最有价值，分布最真实），按 query 频次分层抽样而不是均匀抽样；② 让业务专家写「必答题」（核心场景的 gold set）；③ 用 LLM 基于文档自动生成合成问题（注意要生成「难问题」而不是「原文摘抄型问题」，否则评测集会虚高）。",
+  "评测集必须包含三类用例：正常问答、应拒答（文档里没有的）、对抗用例（易混淆文档、旧版本文档、需要多跳推理的）。只测正常问答的评测集会给出虚假的安全感。",
+  "工程落地：评测必须进 CI——每次改提示词、换模型、调 chunk 策略，自动跑一遍，输出对比报告，指标下降超阈值就告警。这是防止「改好了 A 场景，搞坏了 B 场景」的唯一有效手段。",
+  "线上还要有闭环：用户点踩/点赞、转人工率、追问率（用户反复追问说明没解决）都是廉价的真实信号，把 badcase 自动回流进评测集，让评测集持续增长。"
+ ],
+ follow:[
+  "LLM 裁判和人工标注的一致性你怎么检验？不一致时信谁？",
+  "评测集多久更新一次？怎么防止评测集被「刷过拟合」？",
+  "线上指标（点踩率）和离线评测分不一致，你怎么办？"
+ ],
+ pass:"知道 Faithfulness、Answer Relevancy 这几个指标名，知道评测集的重要性。",
+ good:"能分层讲检索/生成指标，指出 LLM-as-judge 的偏差并给出人工校准方法，给出评测集三条来源与三类用例，并把它接进 CI 与线上 badcase 回流闭环。",
+ red:"没有评测集，调优靠人工试几个 case；或把 RAGAS 分数当作绝对真理，从未校准过裁判。"},
+
+{cat:"LLM应用工程",sub:"RAG",diff:"进阶",type:"设计",tags:["增量索引","知识库更新"],
+ q:"知识库需要持续更新：增量索引、文档删除、版本一致性分别怎么做？",
+ intent:"生产环境的刚需。demo 阶段没人考虑，上线后这是最容易出事故的地方。",
+ ans:[
+  "增量索引：文档按内容哈希（或版本号+修改时间）判重，内容没变就不重建，避免每次全量重建索引烧掉大量 embedding 成本。建一张「文档-切块-向量ID」的映射表，文档更新时只删除旧 chunk 对应的向量、重新切分并写入新向量。",
+  "删除是重点难点：向量库里删一条不难，难的是「文档被拆成 30 个 chunk，怎么保证这 30 条全删干净」。做法是映射表记录每个文档产生的所有向量 ID，删除时按文档 ID 批量精确删除，而不是按相似度或过滤条件删（后者容易漏）。删完要校验：按文档 ID 查一次，确认返回为空。",
+  "版本一致性：① 文档有版本，检索返回的 chunk 必须带上所属文档版本，生成时提示词里要说明「以下资料版本为 xxx」，避免新旧版本混用导致答案自相矛盾；② 同一知识库内如果有「2023版制度」和「2024版制度」两份文档，必须靠元数据过滤或 rerank 优先新版，否则模型会随机引用，这是最常见的线上事故。",
+  "时效性：给每个 chunk 加「生效时间 / 失效时间」元数据，按当前时间过滤。制度类、价格类、政策类知识尤其需要。",
+  "一致性保障（工程层面）：文档状态机——PENDING → PARSING → INDEXING → READY / FAILED。只有 READY 的文档才可被检索（通过元数据过滤 status=READY），避免「正在重建索引的中间态」被用户查到，出现答案时有时无的诡异现象。",
+  "失败处理：解析/向量化失败要有重试与告警，失败的文档不能被静默跳过——用户会以为「知识库里明明有，为什么答不上来」。要有一张「知识库健康度看板」展示解析失败数、待处理数、索引延迟。"
+ ],
+ follow:[
+  "文档正在重建索引时用户来查询，你会返回什么？",
+  "怎么保证删除操作不会误删其他文档的向量？",
+  "新旧版本文档同时在库，你怎么设计让模型稳定引用新版？"
+ ],
+ pass:"知道要增量更新而不是全量重建，知道删除要按文档维度。",
+ good:"能给出文档-切块-向量映射表、文档状态机保证无中间态、版本/生效时间元数据过滤，并有失败告警与健康度看板。",
+ red:"每次更新全量重建索引；删除只删主 chunk 不管其余；没有中间态处理，重建期间答案随机变化。"},
+
+{cat:"LLM应用工程",sub:"Agent",diff:"高阶",type:"设计",tags:["RAG局限","Text-to-SQL","工具调用"],
+ q:"用户问「帮我总结一下公司去年的 OKR 完成情况」，纯 RAG 答不了，你会怎么解决？",
+ intent:"考察 RAG 能力边界的认知，以及向 Agent / 结构化查询演进的思路。这是 5 年经验该有的场景判断力。",
+ ans:[
+  "先做问题分类：这类问题属于「需要聚合、计算、跨多文档」的查询，RAG 的本质是「检索相关片段再总结」，天然不擅长：① 需要覆盖全部文档而非 top-k（top-k 会漏）；② 需要数值计算（模型算数不可靠）；③ 需要跨记录关联。",
+  "方案一（结构化查询，首选）：如果 OKR 数据存在业务库里，走 Text-to-SQL / NL2SQL。关键工程点：Schema 要先做裁剪（只给相关表的 DDL，不要全库塞进去）、提供字段说明与枚举值示例、加 few-shot 例题、执行前做 SQL 安全校验（只允许 SELECT、限制行数、强制租户过滤）、执行失败把错误信息回喂模型自我修正。返回后让模型基于真实数据做总结。",
+  "方案二（文档侧结构化）：如果只有文档，离线用 LLM 把非结构化文档抽取成结构化记录（目标/负责人/进度/完成度）入库，再走方案一。这一步叫「文档→数据的 ETL」，把 RAG 问题转成 BI 问题。",
+  "方案三（Agent 分解 + 多步检索）：让 Agent 把问题拆成「先列出所有部门 → 逐个查该部门 OKR → 汇总」，配合支持「全量遍历」的检索（如按元数据过滤后逐条读）。成本高、延迟长，仅在无结构化数据时用。",
+  "方案四（预计算）：对高频固定查询，离线算好中间结果存起来，线上直接查。企业场景里很大一部分「总结类」需求其实可以被预计算覆盖。",
+  "路由层：线上应该有一个意图分类（小模型或规则）把 query 路由到 RAG / SQL / 预计算 / 联网 / 转人工 等不同通道，而不是所有问题都走 RAG。这个路由器是 AI 应用架构成熟度的标志。",
+  "兜底与诚实：任何方案如果数据不全，必须明确告诉用户「只覆盖到 X 部门，Y 部门数据缺失」，而不是编一个完整的总结。"
+ ],
+ follow:[
+  "Text-to-SQL 生成的 SQL 有注入风险或全表扫描风险，你怎么防？",
+  "从文档抽取结构化数据，抽取错了怎么办？准确率怎么保证？",
+  "路由分类错了（该走 SQL 的走了 RAG），怎么发现和纠正？"
+ ],
+ pass:"能想到用 Text-to-SQL 或把文档结构化，知道 RAG 有边界。",
+ good:"能给出「意图路由 + 多通道」的架构视角，讲清 NL2SQL 的安全校验与自我修正、文档抽取成结构化数据的 ETL 思路，以及预计算降本。",
+ red:"硬用 RAG 回答，说「把所有文档都检索出来给模型」；或完全没意识到 top-k 检索会漏数据导致总结不完整。"},
+
+{cat:"LLM应用工程",sub:"RAG",diff:"高阶",type:"概念",tags:["GraphRAG","知识图谱"],
+ q:"GraphRAG 是什么？什么场景值得上？它的成本和代价是什么？",
+ intent:"考察对新技术是否有独立判断，而不是追热点。5 年经验要有「什么时候不该用」的判断力。",
+ ans:[
+  "传统 RAG 是「向量相似度找片段」，擅长局部事实问答（「报销标准是多少」）；GraphRAG 是先把文档抽成实体-关系图谱，检索时在图上做社区聚类与多跳遍历，擅长「全局性、跨文档、需要关联推理」的问题（「这些合同里涉及的所有供应商之间有什么关联」「过去一年的项目里反复出现的风险主题是什么」）。",
+  "核心差异：微软 GraphRAG 的思路是「预生成社区摘要」，查询时先在对应层级读社区摘要再回答，从而能处理传统 top-k 检索根本覆盖不到的全局性问题。",
+  "值得上的场景：文档间关联密集（合同网络、人物关系、供应链、案件卷宗、代码依赖）；问题需要多跳（A 和 B 通过 C 有关系）；需要全局主题归纳。",
+  "不值得上的场景：FAQ、产品手册、政策制度这类「一问一答、文档互相独立」的知识库——用 GraphRAG 是杀鸡用牛刀，效果未必更好，成本却高一个数量级。",
+  "代价（必须讲清）：① 构建成本极高——实体关系抽取要对全量文档跑 LLM，千万字级文档的建图费用可能是普通向量索引的 10–50 倍；② 时间成本——建图是小时级甚至天级的离线任务，知识更新快的话图谱一直追不上；③ 抽取质量是天花板——抽错了关系，图上推理就是错的，且错误会沿多跳传播放大；④ 工程复杂度——要额外维护图数据库、实体对齐、图谱更新与版本。",
+  "决策建议：先用传统 RAG + 混合检索把基线做扎实，明确发现「多跳/全局类问题」占了真实 query 的显著比例（比如 >15%）且业务价值高，再考虑 GraphRAG 或轻量的图谱增强（只抽关键实体做过滤，不做完整图谱）。"
+ ],
+ follow:[
+  "实体关系抽取的准确率通常是多少？抽错了会怎样？",
+  "知识每天更新，图谱重建跟不上，你怎么处理？",
+  "有没有比完整 GraphRAG 更轻量的折中方案？"
+ ],
+ pass:"知道 GraphRAG 用知识图谱做多跳检索，适合关联密集场景。",
+ good:"能清楚对比「局部事实问答 vs 全局关联问答」的能力边界，给出明确的适用/不适用场景，并把构建成本、抽取质量、更新滞后三个代价讲透，最后给出「先做扎实基线再评估」的决策路径。",
+ red:"只知道这是个新技术、效果好；或说不出任何代价，计划直接在 FAQ 场景上 GraphRAG。"},
+
+/* ============ C. Agent ============ */
+{cat:"LLM应用工程",sub:"Agent",diff:"基础",type:"概念",tags:["ReAct","Plan-and-Execute","Function Calling"],
+ q:"ReAct、Plan-and-Execute、Function Calling 的区别是什么？你如何选型？",
+ intent:"Agent 基础概念题，但要听出是否理解各自的失效模式。",
+ ans:[
+  "Function Calling（Tool Use）是底层能力：模型输出结构化的工具调用请求，由外部执行，结果回喂模型。它本身不是「Agent 范式」，而是所有 Agent 的地基。",
+  "ReAct = Reason + Act 交替循环：思考一步 → 调用工具 → 观察结果 → 再思考 → 再调用，直到得出答案。优点：能根据中间结果动态调整，容错性好，适合探索性、路径不确定的任务。缺点：步数不可控、延迟长、容易在局部反复打转、token 消耗随步数线性增长。",
+  "Plan-and-Execute：先让模型一次性产出完整计划（步骤列表），再逐步执行，执行完可以 replan。优点：全局结构清晰、步数可控、便于展示进度给用户、便于并行执行无依赖的步骤。缺点：计划一旦偏了，后续全错（虽然可以 replan 补救）；对复杂动态环境的适应性不如 ReAct。",
+  "选型经验：任务路径明确、步骤可枚举（如「查订单 → 查物流 → 发通知」）用 Plan-and-Execute，确定性高、成本低、用户体验好（能展示进度条）。任务路径依赖中间结果（如「先搜一下，看结果再决定下一步」）用 ReAct。",
+  "实践中最常见的是混合：顶层 Plan 拆解子任务，每个子任务内部用 ReAct 循环。子任务失败只重试该子任务，而不是整个重来。",
+  "工程要点：无论哪种范式，都必须有步数上限、超时、以及「每步状态可持久化」——否则一次 30 步的任务中途挂了就得从头再来。"
+ ],
+ follow:[
+  "ReAct 循环跑了 20 步还没结束，你怎么处理？",
+  "Plan-and-Execute 里的 replan 触发条件是什么？",
+  "哪些步骤可以并行执行？你怎么判断依赖关系？"
+ ],
+ pass:"能说清 ReAct 是边想边做、Plan 是先规划后执行。",
+ good:"能给出明确的选型依据（路径是否可枚举），提出「顶层 Plan + 子任务 ReAct」的混合方案，并强调步数上限与状态持久化。",
+ red:"把三个概念混为一谈；或只会说「用 ReAct」，说不出它的失效模式和成本问题。"},
+
+{cat:"LLM应用工程",sub:"Agent",diff:"进阶",type:"设计",tags:["工具设计","Tool","Function Calling"],
+ q:"Agent 的工具（Tool）设计有哪些原则？工具数量上限大概是多少？工具太多怎么办？",
+ intent:"Agent 落地最常见的坑就是工具设计，能反映实战经验。",
+ ans:[
+  "工具描述是提示词的一部分，直接影响调用准确率。写好描述的四要素：这个工具能做什么、什么时候该用 / 什么时候不该用、参数含义与取值范围、失败时会返回什么。反面例子：描述写成「查询数据」这种含糊的话，模型会乱调。",
+  "工具要「单一职责且粒度适中」：太细（getUserName / getUserEmail 分开）会导致调用轮次暴涨；太粗（doEverything）会导致模型不敢用或用错参数。判断标准是「一个工具对应一个用户可理解的动作」。",
+  "参数设计：扁平化、必填项尽量少、给枚举而非自由文本、给默认值、参数名要有强语义（user_id 而不是 id）。避免让模型自己拼复杂嵌套 JSON。",
+  "数量上限：经验值在 10–20 个之内比较稳。超过之后模型的工具选择准确率明显下降（会选错工具、漏工具），且每次请求的工具定义本身就占掉大量 token（20 个工具可能吃掉 3–5k token，直接挤压上下文）。",
+  "工具太多的三种解法：① 分层分组——先让模型在「工具组」里选（如「订单相关」「用户相关」），选中组后再加载该组的具体工具（类似 RAG for tools）；② 按意图路由——用分类器或小模型先判断 query 属于哪个域，只注入该域的工具；③ 工具检索——把所有工具描述向量化，运行时检索 top-k 相关的注入。本质都是「动态注入而非全量注入」。",
+  "其他关键设计：工具必须幂等（重试不能产生副作用）、必须有明确超时、返回值要精炼（不要把 1 万行结果全塞回上下文，要先在工具侧做截断/聚合/摘要）、错误信息要能被模型理解（「用户不存在，请检查 user_id」比 「Error 404」有用得多）。",
+  "危险操作（转账、删除、发邮件给外部）必须加二次确认或权限白名单，不能让模型自主执行。"
+ ],
+ follow:[
+  "模型选错了工具，你怎么定位和修复？",
+  "工具返回了 1 万条数据，直接塞回上下文会怎样？怎么截断？",
+  "同一个工具有多个相似版本（查订单 v1/v2），模型会混淆，怎么处理？"
+ ],
+ pass:"知道工具描述要写清楚、数量不能太多。",
+ good:"能给出描述四要素、粒度判断标准、数量上限的量化经验，并提出分层/路由/检索三种动态注入方案，以及幂等、返回值精炼、危险操作确认等工程约束。",
+ red:"认为工具越多能力越强；工具描述随便写；返回值直接全量塞回上下文。"},
+
+{cat:"LLM应用工程",sub:"Agent",diff:"高阶",type:"设计",tags:["多Agent","协作","任务分解"],
+ q:"什么时候需要多 Agent 协作？如何做任务分解与结果汇总？多 Agent 常见的失败模式有哪些？",
+ intent:"考察判断力。2025 年多 Agent 被过度炒作，能说清「什么时候不需要」是加分项。",
+ ans:[
+  "先泼冷水：单 Agent + 好工具能解决 80% 的问题。多 Agent 带来的是复杂度和成本的阶跃式上升（token 消耗可能是 3–10 倍、延迟翻倍、调试难度指数上升）。引入前必须能说清单 Agent 为什么不行。",
+  "真正需要的信号：① 上下文污染——子任务差异极大，塞在一个上下文里互相干扰（如同时要写代码、查文档、做数据分析）；② 需要并行提速——多个独立子任务可以并发；③ 需要专业角色差异化——不同子任务需要完全不同的提示词、工具集甚至模型（如一个负责规划用强模型，一个负责格式校验用便宜模型）；④ 需要对抗式校验——用一个 Agent 生成、另一个 Agent 审查，提升可靠性。",
+  "常见拓扑：Supervisor（主管分发给多个 worker）、流水线（A→B→C 串行，每步专注一件事）、辩论/评审（多方案并行 + 裁判择优）、黑板模式（共享状态，Agent 自主认领任务）。",
+  "任务分解：由规划 Agent 输出结构化计划（带依赖关系、输入输出契约、预计耗时）。每个子任务要有明确的「完成判据」——不含糊的验收标准，否则子 Agent 会交出似是而非的结果。",
+  "结果汇总：不要简单拼接。做法包括：让汇总 Agent 按统一 schema 抽取各子结果的关键字段再做整合；要求每个子 Agent 输出时带上「置信度 + 依据来源」，汇总时优先采信高置信度；冲突时要能上报而不是随机选一个。",
+  "失败模式（实战中最常见的）：① 无限循环——A 说做完了、B 说不合格，来回踢皮球；② 上下文丢失——子 Agent 之间传递信息时被压缩失真是常态；③ 错误传播——上游 Agent 错了，下游全部放大；④ 责任分散——出了问题不知道是哪个 Agent 的锅（所以必须全链路 trace）；⑤ 成本失控——没有全局预算上限，一次任务烧掉几十块钱。",
+  "防护：全局步数与预算硬上限、每个子任务独立超时、共享的结构化状态（而不是靠自然语言传话）、全链路 trace 与回放能力。"
+ ],
+ follow:[
+  "两个 Agent 的输出互相矛盾，你怎么仲裁？",
+  "多 Agent 的 token 成本是单 Agent 的几倍？你怎么控制？",
+  "你有没有遇到过「多 Agent 反而比单 Agent 差」的情况？为什么？"
+ ],
+ pass:"能说出 Supervisor、流水线等常见拓扑，知道任务分解的基本做法。",
+ good:"能明确给出引入多 Agent 的四个必要信号与「先用单 Agent」的前提，讲清结果汇总的 schema 化与置信度机制，并列出五种真实失败模式及对应防护。",
+ red:"认为多 Agent 一定更好，越多越强；讲不出任何失败模式；没有成本和步数的硬约束。"},
+
+{cat:"LLM应用工程",sub:"Agent",diff:"进阶",type:"设计",tags:["Agent安全","死循环","熔断"],
+ q:"Agent 出现死循环、卡死、越权操作，你怎么防？超时、重试、熔断怎么设计？",
+ intent:"生产可靠性必答题。Agent 的自主性是把双刃剑，5 年经验必须有完整的防线设计。",
+ ans:[
+  "死循环防护（多层）：① 硬上限——最大迭代步数（如 10 步）、最大 token 预算、最大墙钟时间（如 120s），三个维度都要有，任一触发即中断；② 循环检测——记录「(工具名, 参数哈希)」的调用历史，短时间内重复调用同一工具且参数相同或参数在几个值之间震荡，判定为打转，强制中断或降级；③ 进展检测——每步要求模型输出「这一步离目标更近了吗」，连续 N 步无进展就终止。",
+  "超时设计：分层超时——单工具调用超时（如 10s）、单次 LLM 调用超时（如 30s）、整个 Agent 任务超时（如 120s）。超时后要给出「已完成的部分 + 卡在哪一步」，而不是干巴巴的失败。",
+  "重试策略：只对幂等的、可重试的错误重试（网络超时、429 限流、5xx）；对业务错误（参数错误、权限不足、数据不存在）绝不重试，直接把错误信息回喂模型让它改参数。重试要有指数退避 + 抖动 + 最大次数上限（通常 2–3 次）。",
+  "熔断降级：Agent 失败后的降级路径要预先设计——降级到「单轮 RAG 直接回答」或「转人工」而不是返回错误。整个系统要能在「Agent 能力不可用」的情况下仍提供基础服务。",
+  "越权与危险操作：① 工具权限按「用户身份 + 会话上下文」动态下发，用户没权限的工具根本不注入给模型（而不是调用了再拒绝）；② 危险操作（写、删、支付、外发）强制二次确认（Human-in-the-loop）或沙箱预执行 + 干跑（dry run）；③ 最小权限原则——工具只暴露必要参数，租户 ID 这类隔离字段由服务端强制注入，绝不信任模型传来的值。",
+  "兜底：所有越权、异常操作必须记审计日志；关键操作有可回滚设计（如发邮件前先存草稿）。"
+ ],
+ follow:[
+  "Agent 卡在第 8 步，前 7 步的工作怎么不浪费？",
+  "模型自己伪造了一个 tool_call 说「已执行成功」，怎么防？",
+  "熔断之后用户体验怎么保证？"
+ ],
+ pass:"知道要设步数上限和超时，知道危险操作要确认。",
+ good:"能给出步数/token/时间三重上限、基于调用历史的循环检测、分层超时、按错误类型的重试策略、权限动态下发与服务端强制注入租户 ID 的完整防线。",
+ red:"只说「设个最大步数」；或完全依赖模型自己遵守提示词里的约束；租户 ID 交给模型传。"},
+
+{cat:"LLM应用工程",sub:"Agent",diff:"进阶",type:"概念",tags:["MCP","协议","生态"],
+ q:"MCP（Model Context Protocol）是什么？它给 AI 应用架构带来了什么变化？",
+ intent:"考察技术敏感度与架构抽象能力，避免只会用框架不懂原理。",
+ ans:[
+  "MCP 是模型与外部工具/数据源之间的标准化通信协议，类比「AI 应用的 USB-C 接口」。它规定了应用（Host/Client）如何发现工具（Tools）、读取资源（Resources）、使用提示词模板（Prompts），以及双向通信方式。",
+  "解决的核心问题：M×N 的集成爆炸。以前每个 AI 应用要为对接每个数据源写一套适配（100 个应用 × 50 个数据源 = 5000 套），有了 MCP，数据源只需实现一次 MCP Server，所有支持 MCP 的应用都能用。",
+  "架构上的变化：① 工具从「硬编码在应用里」变成「可插拔的外部服务」，应用可以在运行时动态发现和挂载工具；② 工具可以独立部署、独立演进、跨应用复用；③ 企业内部的系统（CRM、工单、数据库）只要包一层 MCP Server 就能被各种 AI 客户端接入，不必为每个 AI 应用再写一遍集成。",
+  "对 Agent 的影响：工具动态化天然带来「工具太多怎么办」的新问题——MCP Server 挂一堆之后，工具清单可能有上百个，反而加剧了工具选择困难。所以仍需配合工具检索/分组注入。",
+  "工程上的现实挑战：① 鉴权与权限传递——MCP Server 如何知道当前操作的是哪个用户、该用户有什么权限，这块规范仍在演进；② 可观测性——跨进程的调用链如何打通 trace；③ 稳定性——外部 MCP Server 挂了要有降级；④ 安全——第三方 MCP Server 本质是可执行代码，供应链风险不可忽视，不能随便接入不可信的 Server。",
+  "务实建议：内部系统集成用它确实能显著降低重复劳动；但不要为了「用新技术」而把所有内部函数调用都包成 MCP——进程内函数调用变成跨进程 RPC 会带来延迟、序列化和故障面的增加。"
+ ],
+ follow:[
+  "MCP Server 怎么传递用户身份和权限？",
+  "接了 50 个 MCP Server，工具选择准确率怎么保证？",
+  "什么情况下你不建议用 MCP？"
+ ],
+ pass:"知道 MCP 是工具接入的标准化协议，解决 M×N 集成问题。",
+ good:"能讲清它带来的架构变化（工具可插拔、动态发现、跨应用复用），同时指出鉴权、可观测性、安全供应链等现实挑战，并能说出「进程内调用不必都包成 MCP」的务实边界。",
+ red:"只背了「AI 的 USB-C」这个比喻，讲不出具体解决什么问题、有什么代价；或认为它是万能方案。"},
+
+{cat:"LLM应用工程",sub:"Agent",diff:"高阶",type:"设计",tags:["长任务","状态管理","幂等","断点续跑"],
+ q:"一个 Agent 任务要跑 5 分钟、调用 30 次工具，怎么做状态管理、断点续跑和幂等？",
+ intent:"考察把 Agent 从 demo 推向生产的能力。长任务是 Agent 落地的真实瓶颈。",
+ ans:[
+  "认知前提：长任务 Agent 本质是一个分布式工作流问题，而不是提示词问题。要按工作流的严谨度来设计：状态显式化、每步可重放、故障可恢复。",
+  "状态管理：把 Agent 状态拆成「持久化的结构化状态」和「LLM 上下文」两部分。结构化状态（已完成步骤、中间结果、待办、预算消耗）存 DB；LLM 上下文每次从结构化状态重新组装，而不是依赖内存里的对话历史。这样进程重启也能恢复。",
+  "执行模型：推荐事件溯源（Event Sourcing）或显式状态机——每一步产出一条事件（step_started / tool_result / step_completed），整体状态由事件重放得出。好处是天然可回放、可审计、可调试。",
+  "断点续跑：任务在任意步中断后，从 DB 读取已完成步骤，只重跑未完成部分。关键约束是每步必须是幂等的——同一输入重跑得到同一结果且不产生副作用（如重复扣款、重复发信）。",
+  "幂等实现：给每个「副作用操作」配幂等键（如 任务ID + 步骤序号 + 操作内容哈希），执行前先查是否已经做过；工具侧也要支持幂等键。对无法幂等的操作（发短信），用「预登记 + 确认提交」两阶段。",
+  "用户体验：长任务必须异步化——前端提交后立即返回任务 ID，通过 SSE/WebSocket 推送进度（「第 3/8 步：正在查询订单…」）。绝不让用户盯着转圈 5 分钟。",
+  "中途干预：支持用户中途取消、修改参数后继续、以及「这一步我不满意，重做」。这些都依赖结构化状态而非对话历史。",
+  "成本与超时：为整个任务设 token 与金额预算，接近上限时提前收敛（减少探索、直接给出当前最优结果），而不是硬中断导致任务白跑。"
+ ],
+ follow:[
+  "第 20 步失败了，前 19 步的结果怎么复用？",
+  "用户中途改了需求，之前算的结果还能用吗？怎么判断？",
+  "怎么防止重复扣费？举个你设计过的幂等键。"
+ ],
+ pass:"知道长任务要异步化、要存状态、要能断点续跑。",
+ good:"能提出「结构化状态 + 上下文重建」的分离设计、事件溯源、步骤级幂等键、异步进度推送、预算接近时提前收敛，并把长任务明确定位为分布式工作流问题。",
+ red:"把状态放在内存/对话历史里，进程重启就丢；重跑会重复产生副作用；让用户同步等待 5 分钟。"},
+
+{cat:"LLM应用工程",sub:"Agent",diff:"进阶",type:"设计",tags:["Human-in-the-loop","人工确认"],
+ q:"如何让 Agent 在关键操作前请求人工确认？工程上怎么实现？",
+ intent:"考察 Agent 安全落地的工程细节，以及交互设计能力。",
+ ans:[
+  "触发设计：不是等模型「自己想起来要问」，而是服务端硬性拦截。给工具标注风险等级（低/中/高），高风险工具（转账、删除、外发、改权限）在执行前强制走确认流程——即使模型没主动请求也要拦。这样不依赖模型的自觉性。",
+  "交互协议：Agent 输出一个特殊的结构化动作 request_confirmation（含操作摘要、影响范围、参数明细、风险提示），前端渲染成确认卡片，用户点确认后，服务端才真正执行。Agent 侧把这次交互视为一次「工具返回」，结果回喂后继续执行。",
+  "状态挂起：确认请求发出后 Agent 任务进入 WAITING_USER 状态并持久化，不能占用运行时资源。用户可能几小时后才确认，所以状态必须在 DB 里、且有过期时间（如 24h 未确认自动取消）。",
+  "信息充分性：确认卡片必须让非技术用户能看懂——把「DELETE FROM orders WHERE id=123」翻译成「将删除订单 123（张伟，¥1,280），此操作不可撤销」。让模型生成这段话，但参数从结构化数据取，防止模型篡改数值。",
+  "分级策略：低风险自动执行；中风险首次确认、后续同类可记忆（本次会话内不再问）；高风险每次必问。可以按金额/影响行数/操作类型设定阈值，而不是一刀切。",
+  "批量操作：一次要删 1000 条，不要弹 1000 次确认。做法是「预览 + 一次性批准」——先展示影响清单与统计，用户一次确认后再执行。",
+  "兜底：确认流程本身超时/用户无响应，必须走安全侧（默认为不执行）；所有确认与执行结果记审计日志，包含谁在什么时候批准了什么。"
+ ],
+ follow:[
+  "用户批准了一个操作，但执行时参数已经变了（数据被别人改过），怎么办？",
+  "确认请求发出后进程重启了，恢复时怎么继续？",
+  "你怎么防止「确认疲劳」——用户无脑点同意？"
+ ],
+ pass:"知道要有确认环节，模型输出确认请求由前端渲染。",
+ good:"能提出服务端按风险等级硬性拦截（不依赖模型自觉）、WAITING_USER 持久化状态、面向用户的可读化翻译、分级阈值与批量一次性批准、超时默认不执行与审计日志。",
+ red:"把确认完全交给模型提示词里的「请先询问用户」；确认状态只存在内存；用户点了同意就直接拿模型给的参数执行不做复核。"},
+
+{cat:"LLM应用工程",sub:"AI架构",diff:"高阶",type:"设计",tags:["可观测性","Trace","排障"],
+ q:"一次会话调用了 30 次 LLM、几十个工具，用户投诉「答错了」，你怎么排查？",
+ intent:"AI 应用可观测性是 5 年经验最硬的分水岭。做过的和没做过的一听就知道。",
+ ans:[
+  "前提：如果没有全链路 trace，这道题无解。所以第一答案是「我们每次会话都有一条完整的树状 trace」。",
+  "Trace 结构：Trace（一次用户请求）→ Span（每一次 LLM 调用、每一次工具调用、每一次检索、每一次 rerank）。每个 Span 记录：起止时间、耗时、输入输出全文、token 数与成本、模型与参数、提示词 key+版本、检索回来的 chunk 列表及其分数、错误信息。",
+  "关联维度（关键）：Span 上要打齐「session_id / user_id / tenant_id / prompt_version / model / rag_config_version / agent_version / 代码版本」。没有这些标签，出问题时无法做聚合归因（比如「是 v3 提示词导致的还是换模型导致的」）。",
+  "排查路径：① 拿到 session_id → 打开 trace 树；② 先看耗时与成本分布，定位最慢/最贵的一步；③ 顺着失败的那个最终答案往回追——是检索没召回（chunk 列表里没有正确文档）、还是 rerank 排错了（有但排在第 12）、还是上下文被截断了（正确 chunk 有但 token 超了被裁掉）、还是模型理解/生成错了（上下文都对但答案错）。这四类对应完全不同的修复动作。",
+  "回放能力：能从任意 Span 处修改输入重跑（改提示词、改检索参数），对比结果。这是定位「是不是提示词的问题」最高效的手段。",
+  "聚合分析：单个 case 之外，还要能聚合——某提示词版本的失败率突增、某模型的超时率上升、某知识库文档的召回贡献为 0（说明索引坏了）、成本按租户/功能/模型的多维下钻看板。",
+  "采样与成本：trace 存储成本高（输入输出全文），生产上用「错误请求 100% 采样 + 正常请求 1–10% 采样 + 用户点踩 100% 采样」的tail sampling 策略。",
+  "隐私：trace 里含用户输入全文，要做脱敏与访问控制，留存周期要有策略。"
+ ],
+ follow:[
+  "trace 里存了全量输入输出，存储成本扛得住吗？你怎么采样？",
+  "怎么从「单条 case 排查」上升到「发现系统性问题」？",
+  "上线新提示词后，你怎么快速判断它有没有让线上变差？"
+ ],
+ pass:"知道要看日志，能说出看 retrieval 的 chunk 和最终 prompt。",
+ good:"能给出 Trace/Span 的树状结构与完整打标维度、给出「召回/重排/截断/生成」四类根因的区分定位方法、具备回放与聚合分析能力，并考虑采样成本与隐私脱敏。",
+ red:"靠 print 日志和人工复现；无法定位是哪个环节出错；改了线上提示词后无法评估影响。"},
+
+/* ============ D. 训练 / 微调 / 评测 ============ */
+{cat:"LLM应用工程",sub:"训练与评测",diff:"基础",type:"概念",tags:["微调","RAG","决策"],
+ q:"什么时候该微调，什么时候不该？给出 RAG / 微调 / 提示工程的决策路径。",
+ intent:"经典决策题。5 年经验要能顶住「老板要求微调」的压力给出正确判断。",
+ ans:[
+  "核心区分：RAG 解决「知识」问题（模型不知道这些信息），微调解决「行为」问题（模型知道但表达方式/格式/风格不对）。用微调灌知识是错误用法——知识会过时、会产生幻觉、无法溯源、无法更新。",
+  "决策树：① 模型不知道私有知识（公司制度、产品文档）→ RAG；② 知识需要实时更新 → RAG；③ 答案需要引用溯源/可审计 → RAG；④ 输出格式不稳定/需要严格遵循特定风格或结构 → 先试提示工程 + 结构化输出，不行再微调；⑤ 需要稳定的领域行为（如客服的语气、问诊的追问逻辑、特定分类体系）→ 微调；⑥ 需要用小模型达到大模型在某垂直任务上的效果以降成本 → 微调（蒸馏）；⑦ 需要极低延迟、无法接受长提示词 → 微调（把指令内化，省掉 few-shot 的 token）。",
+  "不该微调的情况：数据少于几百条、需求变化频繁、只是想「试试看」、团队没有评测体系（没法验证微调到底有没有变好）、问题其实出在检索/提示词上。",
+  "成本对比要讲清：微调一次性训练成本 + 每次都要承担的模型部署/运维成本 + 每次更新都要重训；RAG 是持续的存储与检索成本，但知识更新即时生效。",
+  "实践建议：永远先做「提示工程 + RAG」的基线并量化效果。只有在基线明确卡在「模型行为」而非「知识缺失」时，才考虑微调。而且微调往往不是终局——很多项目最终是「微调做格式/风格 + RAG 做知识」的组合。",
+  "反例警示：用微调去记 1000 条 FAQ，结果模型记住了 60%、剩下的开始编，且无法溯源、无法更新——这是典型的用错工具。"
+ ],
+ follow:[
+  "老板坚持要微调，你怎么说服他？",
+  "微调 + RAG 组合使用时，两者的边界怎么划？",
+  "微调之后知识更新了怎么办？"
+ ],
+ pass:"能说出 RAG 管知识、微调管行为的基本区分。",
+ good:"能给出完整的决策树并说明每类场景的理由，量化对比成本，提出「先做基线再判断」的路径，并能指出用微调灌知识的典型反例。",
+ red:"遇到效果不好就想到微调；认为微调能让模型「学会」公司知识；说不清两者的适用边界。"},
+
+{cat:"LLM应用工程",sub:"训练与评测",diff:"进阶",type:"概念",tags:["LoRA","QLoRA","超参"],
+ q:"LoRA / QLoRA 的原理是什么？rank、alpha、学习率这些超参怎么定？",
+ intent:"考察微调是否真上手过，还是只调过 API。",
+ ans:[
+  "原理：冻结预训练模型权重，只训练注入的低秩分解矩阵。对某个权重矩阵 W（d×k），不直接更新 W，而是训练 B（d×r）和 A（r×k）两个小矩阵，使得 ΔW = B×A，其中 r << min(d,k)。前向传播时 W' = W + (alpha/r)·BA。参数量从 d×k 降到 r×(d+k)，通常只占原模型的 0.1%–1%。",
+  "好处：显存与算力需求大幅下降（单卡可训）、训练快、可插拔（不同任务训不同的 adapter，切换只需换几十 MB 的权重）、缓解灾难性遗忘（原权重冻结）。",
+  "QLoRA：在 LoRA 基础上把基座模型量化到 4-bit（NF4 量化 + 双重量化 + 分页优化器），进一步降低显存。代价是有轻微精度损失，推理时需要反量化（或合并权重）。",
+  "rank（r）：控制表达能力。经验起点 r=8 或 16；任务复杂、数据量大（>1万条）可以上 32/64；r 越大越接近全参数微调但过拟合风险和显存也上升。通常 8–64 之间，超过 64 收益递减。",
+  "alpha：缩放系数，实际更新幅度是 alpha/r。常见做法 alpha = 2×r（如 r=16, alpha=32）。有些实现里固定 alpha=2r 相当于把缩放固定为 2，调 r 即可。",
+  "学习率：LoRA 的学习率比全参数微调大得多，通常 1e-4 ~ 2e-4（全参微调一般 1e-5 ~ 2e-5）。用 cosine 衰减 + warmup（warmup 占比 3%–10%）。",
+  "其他：target_modules 一般覆盖所有线性层（q_proj, k_proj, v_proj, o_proj, gate/up/down_proj）效果比只训 q,v 好；dropout 0.05–0.1 防过拟合；epoch 通常 2–3 轮，多了容易过拟合（尤其小数据集）。",
+  "调参方法：先用小数据 + 少步数跑通流程验证 pipeline 正确，再网格搜索 r × lr 的少数几组，用验证集 loss 和下游任务指标选。不要一上来就大海捞针。"
+ ],
+ follow:[
+  "训练 loss 降了但线上效果没变好，可能是什么原因？",
+  "LoRA 权重怎么合并部署？多个 adapter 怎么切换？",
+  "你遇到过 LoRA 训练不稳定（loss 爆炸）吗？怎么解决的？"
+ ],
+ pass:"知道 LoRA 是低秩矩阵、省显存，能说出 r 和 alpha 的大致取值。",
+ good:"能讲清 ΔW=BA 的数学形式与 alpha/r 缩放关系，给出 r/lr/epoch 的实战取值区间与理由，说明 target_modules 覆盖范围的影响，并给出「先跑通再网格搜索」的调参路径。",
+ red:"只听过名字；把 LoRA 和量化混为一谈；超参全靠抄 GitHub 默认配置且说不出为什么。"},
+
+{cat:"LLM应用工程",sub:"训练与评测",diff:"进阶",type:"设计",tags:["SFT数据","数据质量"],
+ q:"SFT 数据怎么构造？多少条才够？如何做质量过滤（去重、难度、多样性）？",
+ intent:"数据质量决定微调上限。考察是否理解「数据工程 > 调参」。",
+ ans:[
+  "核心认知：微调效果的天花板由数据质量决定，超参调优的边际收益远小于数据清洗。大部分微调失败的案例都是数据问题而非训练问题。",
+  "数据来源：① 真实业务日志（最有价值，但需脱敏与授权）；② 专家标注（质量最高，成本最高）；③ 强模型蒸馏（用 GPT/Claude 级模型生成，注意许可协议与服务条款）；④ 自造（Self-Instruct，用种子问题让模型扩展生成）。",
+  "数量：没有魔法数字，但经验区间是——风格/格式对齐类 500–2000 条就能看到明显效果；复杂任务（多步推理、领域问答）通常 5000–50000 条。质量远比数量重要：1000 条高质量数据 > 10000 条噪声数据。",
+  "去重：① 精确去重（哈希）；② 近似去重（MinHash / SimHash / embedding 聚类后每簇保留代表），去掉高度相似的模板化样本；③ 指令去重和答案去重都要做。",
+  "难度分层：数据不能全是简单样本，否则模型学不到难的处理方式；也不能全是难题，否则基础能力退化。做法是用模型给样本打难度分（或按「强模型一次能否答对」划分），保留合理的难度分布，对难题可以过采样。",
+  "多样性：按「任务类型 × 领域 × 输入长度 × 输出长度 × 语言」分层统计，看哪些格子是空的就补哪些。用 embedding 聚类可视化检查分布是否均衡，避免数据全集中在少数几个模式上。",
+  "质量过滤实操：① 规则过滤（长度异常、含乱码、含重复 n-gram、截断没写完的）；② 模型打分（用一个模型当裁判给「指令清晰度 / 答案正确性 / 有帮助程度」打分，过滤低分）；③ 一致性校验（同一问题多次采样答案，一致性低的说明题目本身有歧义，剔除）；④ 人工抽检——这一步永远不能省，抽 100 条人工看，是发现系统性问题的唯一可靠方式。",
+  "验证集：必须留出独立验证集（不与训练重合），且验证集的分布要贴近真实线上分布而非训练分布，否则指标虚高。",
+  "数据版本管理：数据集也要有版本号和变更记录，否则「这版模型为什么变差了」无法归因。"
+ ],
+ follow:[
+  "1000 条数据能微调出可用的模型吗？什么条件下可以？",
+  "你怎么发现训练数据里有系统性的标注错误？",
+  "用商业大模型生成训练数据，有哪些合规风险？"
+ ],
+ pass:"知道数据要清洗、要去重，知道几百到几千条的量级。",
+ good:"能给出多来源数据策略、分层去重/难度/多样性的具体手段、模型打分+人工抽检的质量过滤流程，强调独立验证集与数据版本管理，并指出「数据质量 > 超参调优」。",
+ red:"认为数据越多越好；只做简单长度过滤；没有独立验证集；从未人工抽检过训练数据。"},
+
+{cat:"LLM应用工程",sub:"训练与评测",diff:"进阶",type:"设计",tags:["微调评估","灾难性遗忘"],
+ q:"微调后怎么评估？灾难性遗忘怎么检测和缓解？",
+ intent:"考察评估的完整性。很多人只测目标任务，忽略能力退化。",
+ ans:[
+  "评估必须三层：① 目标任务指标（微调想提升的那个）——这是主指标；② 通用能力回归（通用问答、推理、指令遵循、安全性）——检测遗忘；③ 线上业务指标（真实的成功率、点踩率、成本、延迟）——最终裁判。只看第一层就上线是危险的。",
+  "对比基准要公平：和「基座模型 + 相同提示词」对比，而不是和模糊的记忆印象比。要做多次采样取平均（生成任务单次结果波动大），并做统计显著性检验（样本量足够时）。",
+  "灾难性遗忘检测：准备一份「冻结的通用能力评测集」（如几百条覆盖推理、数学、代码、写作、安全拒答的通用题），每次微调后都跑一遍。如果目标指标涨了但通用指标跌了，就要权衡——除非你的场景是完全封闭的垂直任务，否则通用能力下跌通常不可接受。",
+  "缓解手段：① 降低学习率、减少 epoch（最常见有效的办法，很多遗忘其实是过拟合）；② 数据混合——在训练数据里掺入 5%–30% 的通用指令数据（这叫 rehearsal），效果往往立竿见影；③ 用 LoRA 而非全参微调（冻结原权重天然缓解）；④ 减小 rank；⑤ 只微调部分层或只训特定模块；⑥ 用 KL 散度正则约束输出分布不要偏离基座太远。",
+  "其他微调风险：过拟合（训练集完美、验证集很差）、风格过强（所有回答都变成一个腔调，即使问题不需要）、安全性退化（微调可能削弱对齐，让模型更容易执行有害指令——这一点常被忽略但很危险）、幻觉增加（在知识类任务上微调尤其明显）。",
+  "上线策略：影子流量并行跑一段时间，对比新旧模型，指标不劣化再切量；保留一键回滚到基座模型的能力。"
+ ],
+ follow:[
+  "目标指标涨了 5%，通用能力跌了 8%，你上不上？",
+  "微调后模型安全性变差了，怎么发现？怎么修？",
+  "怎么判断是过拟合而不是遗忘？"
+ ],
+ pass:"知道要用验证集评估，知道微调可能损害通用能力。",
+ good:"能给出三层评估体系、对比基线的公平性与显著性要求、通用能力冻结集的做法，以及学习率/epoch/数据混合/LoRA 等具体缓解手段，并指出安全性退化和幻觉增加这两个常被忽略的风险。",
+ red:"只测目标任务；没听过灾难性遗忘；微调完直接上线没有回归评测。"},
+
+{cat:"LLM应用工程",sub:"训练与评测",diff:"进阶",type:"设计",tags:["模型选型","开源vs商用"],
+ q:"开源模型 vs 商业 API，你怎么选？评估维度有哪些？",
+ intent:"考察综合决策能力，涉及技术、成本、合规、风险多个维度。",
+ ans:[
+  "维度一 效果：在你的业务评测集上跑分，不要用公开榜单代替。注意区分「通用能力」和「你的任务能力」——很多场景下小模型 + 好的 RAG/提示词能追平大模型。",
+ "维度二 成本：算 TCO 而不只是单价。商业 API 是按 token 付费（可变成本，用得多花得多）；开源自建是 GPU 固定成本 + 运维人力。有个交叉点：量小用 API 便宜，量大到一定程度自建更划算（常见分界线在每月几千万到上亿 token 量级，取决于模型大小和 GPU 单价）。",
+  "维度三 延迟与稳定性：商业 API 有网络往返、可能限流、可能受区域限制；自建可控制延迟但要做高可用。首 token 延迟（TTFT）对交互体验影响极大。",
+  "维度四 数据与合规：这是最容易被低估的维度。金融、医疗、政务等场景数据不能出域，必须私有化部署；商业 API 要确认厂商的数据留存政策、是否用于训练、是否符合等保/个人信息保护要求。",
+  "维度五 可控性：开源可以微调、可以改解码策略、可以加约束解码、可以做深度定制；商业 API 只能调参数，模型升级（有时是静默的）会导致行为漂移——线上效果可能某天突然变化而你毫无察觉。这一点很致命。",
+  "维度六 团队能力：自建推理需要懂 vLLM、GPU 运维、弹性伸缩的人。没有这个能力硬上自建会变成运维灾难。",
+  "务实策略：混合使用（模型路由）——简单/高频/低成本的任务用小模型或开源模型，复杂/高价值的用强商业模型；商业 API 做冷启动验证需求，跑通后再评估是否用开源降本。架构上用 LLM 网关屏蔽差异，保证可切换。",
+  "合同与风险：关注商业 API 的 SLA、限流配额、停服风险、价格变动历史；开源要关注许可证（Llama、Qwen、DeepSeek 各自的商用条款不同）。"
+ ],
+ follow:[
+  "商业 API 模型静默升级导致线上效果变差，你怎么防？",
+  "自建推理的 GPU 成本怎么估算？什么量级开始划算？",
+  "混合路由怎么判断该用大模型还是小模型？"
+ ],
+ pass:"能从效果和成本两个维度对比。",
+ good:"能系统给出效果/成本/延迟/合规/可控性/团队六个维度，指出商业 API 静默升级的风险和自建的运维门槛，并提出混合路由 + 网关屏蔽差异的落地策略。",
+ red:"只说「开源省钱」或「商业 API 效果好」这种单维度结论；完全没考虑数据合规和模型版本漂移。"},
+
+{cat:"LLM应用工程",sub:"训练与评测",diff:"高阶",type:"设计",tags:["评测体系","badcase回流"],
+ q:"如何为你的 AI 应用设计评测体系？线上 badcase 如何回流成评测集？",
+ intent:"把评测从「一次性动作」升级为「持续运转的体系」，这是资深工程师的标志。",
+ ans:[
+  "评测分层：① 离线评测集（golden set）——回归用，进 CI，防劣化；② 线上 A/B——验证真实增益；③ 线上监控指标——持续健康度。三层缺一不可，只做离线会脱离真实分布，只做线上则改动的代价太大。",
+  "评测集设计原则：分布贴近真实（按真实 query 频次分层抽样，而不是均匀覆盖）；覆盖三类用例（正常/应拒答/对抗）；有明确的判定标准（能自动判就自动判，不能自动判就定好人工 rubric）；样本量足够（主指标要能检出 3%–5% 的差异，通常需要几百条）。",
+  "判定方式选择：① 精确匹配/正则——适合分类、抽取、结构化输出；② 语义相似度——适合改写类，但容易放过实质错误；③ LLM-as-judge——灵活但需校准；④ 人工标注——金标准，成本高，用于校准和抽检。优先用确定性判据，判据越客观越好。",
+  "badcase 回流闭环（核心）：① 采集——用户点踩、转人工、重复追问、负向反馈、以及基于规则的自动检测（如答案里有「我不知道」但分类为应回答、引用为空、响应时间异常）；② 归因——把 badcase 关联到 trace，定位是哪个环节（召回/重排/提示词/模型）；③ 入库——把 case 连同正确的期望输出（由专家补标注）加入评测集，打上来源标签；④ 验证——下次改动后这些 case 必须通过；⑤ 运营——定期（如每周）开 badcase 复盘会，归类统计找出系统性问题而不是一个个零散修。",
+  "防过拟合：评测集要持续扩充（每季度补充新 case），并保留一份「不对外公开的 holdout 集」用于最终验收，防止团队为了指标好看而对着评测集刷分。",
+  "指标看板：离线通过率趋势、线上点踩率、转人工率、任务完成率、单次成本、P95 延迟——这些要放在一起看，因为很容易出现「效果涨了但成本翻倍」的虚假优化。"
+ ],
+ follow:[
+  "评测集跑分涨了但用户点踩也涨了，可能是什么原因？",
+  "怎么防止团队对着评测集刷分？",
+  "badcase 太多修不过来，你怎么排优先级？"
+ ],
+ pass:"知道要建评测集并定期跑。",
+ good:"能给出离线/线上/监控三层体系、评测集的三类用例与分布原则、判据的优先级选择，以及采集→归因→入库→验证→复盘的完整 badcase 回流闭环，并有防过拟合设计。",
+ red:"评测靠人工试几个例子；没有 badcase 回流机制，同样的问题反复出现；指标只有「感觉变好了」。"},
+
+/* ============ E. 推理与成本 ============ */
+{cat:"LLM应用工程",sub:"推理与成本",diff:"进阶",type:"设计",tags:["TTFT","延迟优化"],
+ q:"AI 应用的首 token 延迟（TTFT）和整体吞吐分别有哪些优化手段？",
+ intent:"性能优化是用户体验的命门，也是全栈工程师区别于算法工程师的强项。",
+ ans:[
+  "先拆分延迟构成：TTFT = 网络往返 + 排队等待 + 提示词处理（prefill）+ 首个 token 生成。生成阶段（每 token）=  decode 速度。总延迟 ≈ TTFT + 输出长度 × 每 token 时间。优化前必须先测量各段耗时，否则会优化错地方。",
+  "降 TTFT：① 缩短输入提示词（少塞 few-shot、压缩检索内容、去掉冗余工具定义）——prefill 时间与输入长度近似线性，这是最立竿见影的手段；② 开启 prefix caching，把固定的系统提示词前缀缓存住，重复请求不用重算；③ 减少网络往返（就近接入、连接复用、HTTP/2）；④ 排队优化（优先级队列、避免长请求阻塞短请求）；⑤ 用更小的模型做简单任务。",
+  "降每 token 时间 / 提吞吐：① 连续批处理（continuous batching）让 GPU 持续满载；② 量化（FP8/INT8/INT4）提升计算与显存效率；③ 推测解码（speculative decoding）——用小模型先起草、大模型并行验证，通常能提速 2–3 倍且质量几乎无损；④ 更好的推理引擎（vLLM / TensorRT-LLM / SGLang）。",
+  "产品侧优化（常常比技术手段更有效）：① 流式输出——TTFT 后立刻开始显示，用户感知延迟大幅下降（这是 AI 应用的标配，不流式的产品体验很差）；② 先给出「正在查询…」的中间反馈；③ 限制输出长度（max_tokens 设合理值，并要求简洁）；④ 任务拆分并行（可以同时检索和调用工具，而不是串行）。",
+  "输出长度控制：很多慢是因为模型啰嗦。在提示词里明确「控制在 200 字以内」「直接给结论不要复述问题」，配合 max_tokens 硬约束。输出 token 是成本与延迟的共同大头。",
+  "测量与 SLO：定义 P50/P95/P99 的 TTFT 与总时长目标；按「输入长度分桶」来看指标（长输入请求的延迟天然更高，混在一起看会被平均掉）。"
+ ],
+ follow:[
+  "P95 延迟达标但用户还是觉得慢，为什么？",
+  "prefix caching 命中率怎么提升？提示词的哪部分应该固定在前缀？",
+  "流式输出中途断了，前端怎么处理？"
+ ],
+ pass:"知道流式输出能改善感知延迟，知道提示词长度影响 TTFT。",
+ good:"能拆解 TTFT 的各段构成并强调先测量，给出 prefix caching / 连续批处理 / 推测解码 / 量化等技术手段，同时给出流式输出、中间反馈、输出长度控制等产品侧手段，并能按输入长度分桶看 SLO。",
+ red:"只说「换个更快的模型」；不知道 TTFT 和总时长的区别；没有流式输出。"},
+
+{cat:"LLM应用工程",sub:"推理与成本",diff:"进阶",type:"编码",tags:["流式输出","SSE","断线重连"],
+ q:"流式输出在 AI 应用里怎么做？SSE 和 WebSocket 怎么选？断线重连和中途停止怎么实现？",
+ intent:"全栈硬技能题。AI 应用的流式是刚需，实现细节很多坑。",
+ ans:[
+  "协议选择：AI 对话是「服务端单向持续推送」，SSE（Server-Sent Events）最合适——基于 HTTP、天然支持断线自动重连（浏览器原生 EventSource）、无需额外协议开销、能穿过大多数代理和网关。WebSocket 是双向的，只在需要客户端持续上行（如语音实时流、协同编辑）时才必要。轮询基本不考虑。",
+  "服务端实现要点：响应头设 Content-Type: text/event-stream、Cache-Control: no-cache、Connection: keep-alive，并关闭中间层缓冲（Nginx 要设 proxy_buffering off，否则数据会被攒着不发）；数据格式 data: {...}\\n\\n；定期发心跳注释（: ping\\n\\n）防止代理因空闲断开。",
+  "前端：用 fetch + ReadableStream 比原生 EventSource 更灵活（EventSource 不支持 POST 和自定义 header，而 AI 请求往往需要带 body 和鉴权头）。要自己做增量解析：按 \\n\\n 切分事件，处理跨 chunk 的半个 JSON。",
+  "中途停止：客户端 AbortController.abort() → 服务端要能感知连接断开（读 stream 的 close 事件）→ 中止 LLM 生成（推理框架支持取消）→ 记录已生成的部分并结算 token 成本。关键是「用户按了停止，服务端必须真的停」，否则 GPU 还在算、钱还在花。",
+  "断线重连：给流一个「游标」（已接收的 token 序号或 offset），重连时带上，服务端从该位置续传（需要服务端缓存生成中的内容，如存 Redis 并设置 TTL）。做不到续传就退化为「重新生成」或「返回已生成部分 + 提示重试」。",
+  "与 Agent 的结合：Agent 场景下不光要流 token，还要流「思考过程 / 工具调用 / 进度步骤」。做法是定义多种事件类型（delta / tool_call / step / done / error），前端按类型分别渲染。工具调用的结构化参数要累积完整再解析，不能边收边解析。",
+  "坑：移动端弱网下长连接容易断；某些企业代理会缓冲 SSE；负载均衡器有空闲超时要调大；流式下无法在响应头返回 HTTP 错误码（已经 200 了），错误只能在事件流里用 error 事件表达。"
+ ],
+ follow:[
+  "用 EventSource 不能带 Authorization 头，你怎么解决鉴权？",
+  "用户点了停止，但计费怎么算？已生成的部分算不算钱？",
+  "流式过程中后端报错了（比如第 50 个 token 时工具调用失败），怎么优雅处理？"
+ ],
+ pass:"知道用 SSE 做流式，知道前端要处理增量解析。",
+ good:"能对比 SSE/WebSocket 的适用场景，讲清服务端头设置与 Nginx 缓冲关闭、AbortController 与服务端真实取消生成、游标续传、多事件类型设计，以及「流式下错误只能在事件里报」等实战坑。",
+ red:"用普通 POST 等完整响应再渲染；不知道要关代理缓冲；点了停止服务端还在继续跑。"},
+
+{cat:"LLM应用工程",sub:"推理与成本",diff:"高阶",type:"概念",tags:["KV Cache","Prefix Caching","批处理"],
+ q:"KV Cache、Prefix Caching、Continuous Batching 对业务意味着什么？",
+ intent:"考察是否理解推理引擎优化与业务成本的联系，而不是只会调 API。",
+ ans:[
+  "KV Cache：自回归生成时，每生成一个 token 都要对前面所有 token 做注意力计算。KV Cache 把前面 token 的 Key/Value 缓存下来，避免重复计算，把生成从 O(n²) 降到 O(n)。业务含义：它决定了「输入越长，显存占用越大、能并发的请求越少」——显存是推理服务的硬约束，KV Cache 的管理效率直接决定单卡能扛多少并发。",
+  "Prefix Caching：把一段前缀（通常是系统提示词 + 工具定义 + 固定的知识片段）算好的 KV Cache 缓存起来，下一个请求如果前缀相同就直接复用，跳过这部分 prefill 计算。业务含义：① TTFT 显著下降（尤其系统提示词很长时，可能省掉几百毫秒）；② 成本下降（很多厂商对缓存命中的输入 token 打折，通常便宜 50%–90%）。",
+  "Prefix Caching 的工程要求：必须把「不变的内容放前面，变的内容放后面」。如果提示词模板是「用户输入 + 系统提示」，每次前缀都不同，命中率为 0。这是一个看似微小但影响巨大的架构决策——模板的组装顺序要刻意设计。",
+  "Continuous Batching（连续批处理）：传统静态批处理要等一个 batch 里所有请求都完成才能接新请求，长请求会拖住短请求（队头阻塞）。连续批处理在 token 粒度调度——某个请求生成完了立刻释放槽位、塞入新请求。业务含义：吞吐能提升数倍，GPU 利用率从 30% 提到 80%+，单 token 成本大幅下降。",
+  "对业务的三个实际影响：① 定价——自建推理时这些优化决定了你的单位成本能否低于 API；② 提示词设计——为了 prefix caching 要重排提示词结构；③ 容量规划——显存（KV Cache 大小）× 批处理策略决定了需要的 GPU 数量。",
+  "补充：PagedAttention（vLLM 的核心）借鉴操作系统虚拟内存分页，把 KV Cache 分成小块按需分配，把显存浪费从 60%+ 降到 4% 以下，这是吞吐提升的关键。"
+ ],
+ follow:[
+  "你的提示词模板是怎么重排来提高 prefix caching 命中率的？",
+  "命中率你怎么监控？低于多少要告警？",
+  "自建推理时，你怎么估算需要几张卡？"
+ ],
+ pass:"知道 KV Cache 是缓存注意力中间结果，知道批处理能提吞吐。",
+ good:"能把三个概念都映射到业务指标（TTFT、单位成本、并发容量），尤其能讲清 prefix caching 要求「固定内容前置」的架构含义，以及连续批处理解决队头阻塞的原理。",
+ red:"只背名词；说不出对业务的任何实际影响；不知道 prefix caching 对提示词组装顺序的要求。"},
+
+{cat:"LLM应用工程",sub:"推理与成本",diff:"高阶",type:"设计",tags:["成本优化","模型路由","语义缓存"],
+ q:"AI 应用的成本怎么系统性优化？模型分级路由和语义缓存怎么设计？",
+ intent:"成本是 AI 应用规模化后的头号问题。5 年经验必须有完整的降本方法论。",
+ ans:[
+  "先建立成本可观测：按「租户 × 功能 × 模型 × 提示词版本」多维统计 token 与金额。没有这个，所有优化都是盲目的——你甚至不知道钱花在哪。这是第一步，也是很多团队跳过的第一步。",
+  "第一层 减少无效调用：语义缓存（见下）、去重（用户重复提问）、防刷（限流与配额）、避免不必要的重试。这一层的收益往往是最大的且风险最低。",
+  "第二层 缩短单次调用：压缩提示词（精简系统提示、减少 few-shot、检索 top-k 从 10 降到 5）、限制输出长度（明确字数要求 + max_tokens）、用结构化输出减少废话、开启 prefix caching 拿缓存折扣。",
+  "第三层 模型分级路由（核心手段）：不是所有请求都需要最强模型。设计一个路由器，把请求按难度分级：简单问答/格式转换/分类/摘要 → 小模型（成本差 10–50 倍）；复杂推理/长文生成/高风险决策 → 大模型。路由方式：规则（按 query 长度、意图分类）、小模型分类器、或「小模型先答 + 置信度判断，不够再升级到大模型」（这种 cascade 方式性价比最高）。",
+  "第四层 架构优化：RAG 用便宜的 embedding、rerank 只对少量候选做；Agent 限制步数与预算；把能预计算的结果离线算好。",
+  "语义缓存设计：把用户 query embedding 后检索缓存，相似度超过阈值（如 0.95）且未过期就直接返回缓存答案。关键工程点：① 缓存 key 要包含「query 语义 + 提示词版本 + 模型 + 知识库版本」，任一变化都要失效，否则会返回用旧知识/旧提示词生成的错误答案；② 时效性——对时间敏感的问题（「今天天气」「最新政策」）不能缓存或 TTL 极短；③ 个性化——不同用户/租户的结果不能混用（隐私与正确性）；④ 命中率——通常 10%–30%，对 FAQ 类场景可更高。",
+  "风险：降本不能以牺牲质量为代价。每次优化必须跑回归评测 + 线上 A/B，确认核心指标不劣化。要有「成本-质量」帕累托前沿的意识。",
+  "组织手段：给每个功能设 token 预算与告警；定期（月度）做成本 review，找出成本 TOP 的功能专项优化。"
+ ],
+ follow:[
+  "语义缓存命中了但答案已经过时（知识库更新了），怎么防？",
+  "模型路由判断错了，把难题给了小模型，怎么兜底？",
+  "你们的成本结构里，哪一块占比最大？优化了多少？"
+ ],
+ pass:"知道换小模型、缩短提示词、加缓存三种手段。",
+ good:"能给出「可观测 → 减无效调用 → 缩单次 → 模型路由 → 架构优化」的五层体系，讲清 cascade 路由的性价比优势，以及语义缓存的复合 key 设计（含提示词/知识库版本）与时效性、个性化风险。",
+ red:"成本优化只想到「换便宜模型」；没有成本可观测；降本后不做质量回归验证。"},
+
+{cat:"LLM应用工程",sub:"推理与成本",diff:"进阶",type:"概念",tags:["vLLM","推理引擎","自建"],
+ q:"vLLM / TensorRT-LLM / SGLang / Ollama 的定位差异？什么时候该自建推理服务？",
+ intent:"考察技术选型判断力，避免盲目自建。",
+ ans:[
+  "Ollama：定位是本地开发与体验工具，单用户、易用、一键跑模型。不适合生产高并发（吞吐低、无连续批处理的完整优化、无多卡调度）。用途：本地开发调试、demo。",
+  "vLLM：开源生产级推理引擎，核心是 PagedAttention + 连续批处理，社区活跃、模型支持广、OpenAI 兼容 API，是自建推理最主流的选择。优势：吞吐高、易上手、生态好。适合绝大多数自建场景。",
+  "SGLang：同样开源高性能，特点是 RadixAttention（更激进的前缀缓存，支持树形共享）和结构化输出的高效约束解码，在「多轮对话、大量共享前缀、需要结构化输出」的场景下表现突出，Agent/多轮场景常见优势。",
+  "TensorRT-LLM：NVIDIA 官方的极致性能优化方案，把模型编译成 TensorRT 引擎，在 NVIDIA 卡上延迟和吞吐通常最优。代价：需要编译（模型适配有工作量）、灵活性较低、对硬件绑定强。适合对性能极致要求且有工程能力的团队。",
+  "什么时候自建：① 成本交叉点——月 token 量足够大，自建的 GPU 固定成本摊薄后低于 API 调用费（需要按实际 GPU 单价和利用率算，注意利用率通常只有 50%–70%）；② 数据合规——数据不能出域；③ 需要定制——约束解码、自定义解码策略、需要微调后部署、需要完全掌控模型版本；④ 延迟/稳定性要求——需要内网部署、极低且稳定的延迟。",
+  "什么时候不该自建：量小、没有 GPU 运维人力、模型迭代快（自建跟不上新模型发布）、只需要通用能力。这种情况用 API 更划算，把人力投入到应用层。",
+  "自建的隐性成本要讲清：GPU 采购/租用、运维人力（7×24）、模型升级适配、高可用与容灾、弹性伸缩（GPU 冷启动慢）、监控告警体系。这些常常被低估到「以为省钱结果更贵」。"
+ ],
+ follow:[
+  "自建推理的 GPU 利用率一般是多少？怎么提升？",
+  "模型冷启动很慢（几十秒），怎么做弹性伸缩？",
+  "多卡、多机怎么部署？负载均衡怎么做？"
+ ],
+ pass:"知道 vLLM 是主流推理引擎，知道自建需要 GPU 运维。",
+ good:"能清晰区分四个工具的定位（开发 vs 生产 vs 极致优化），给出自建的四类触发条件与不该自建的场景，并把 GPU 利用率、运维人力、冷启动、模型升级等隐性成本讲透。",
+ red:"把 Ollama 当生产方案；只说「自建省钱」却算不出交叉点；不知道 vLLM 的 PagedAttention 解决什么问题。"},
+
+{cat:"LLM应用工程",sub:"推理与成本",diff:"进阶",type:"设计",tags:["限流","配额","多租户"],
+ q:"多租户 SaaS 下，token 预算怎么控制？突发流量怎么扛？",
+ intent:"AI 应用的成本可被单个用户放大，限流体系是必备防线。",
+ ans:[
+  "多层配额：① 请求频次限流（QPS/RPM）——防刷；② token 配额（按租户/用户/功能，日/月维度）——控成本；③ 并发限制（同时进行的流数）——保护后端容量；④ 单次请求上限（max_tokens、最大输入长度）——防单次爆炸；⑤ Agent 专项（单会话最大步数、最大预算）——防 Agent 失控。五层都要有，只做第一层是不够的。",
+  "限流算法：令牌桶（允许突发）或滑动窗口（更公平）。分布式环境下用 Redis 做集中计数（Lua 脚本保证原子性）。限流要在网关层做，不能只在中奖的应用层。",
+  "上游限流传递：商业 API 本身有限流（RPM/TPM）。你的系统会收到 429，必须：① 指数退避 + 抖动重试；② 主动排队而不是硬冲——在网关层维护请求队列，按上游配额匀速放行；③ 多 API Key 轮询（注意合规与服务条款）；④ 多厂商备份，一个限流就切另一个。",
+  "突发流量：① 削峰——异步化（任务队列），请求进来先入队，返回任务 ID，用户看到排队位置；② 弹性——自建推理要预热 GPU 实例（冷启动慢是硬伤，通常需要预留常驻容量 + 弹性补充）；③ 降级——高峰时降级到小模型、减少检索 top-k、关闭非核心的增强功能；④ 排队优先级——付费租户优先、短请求优先。",
+  "配额执行：软配额（超出后告警 + 限流降级）与硬配额（直接拒绝）结合。接近配额时提前通知用户，避免「用到一半突然不可用」的糟糕体验。",
+  "归因与告警：成本按租户可查（也是计费依据）；异常检测——某个租户成本突然涨 10 倍，可能是被刷或代码 bug，要能自动告警甚至自动熔断。",
+  "体验：限流返回要给明确的Retry-After和友好提示，而不是干巴巴的 429。"
+ ],
+ follow:[
+  "一个用户写脚本刷你的接口，你怎么发现和拦截？",
+  "上游 API 返回 429，你的用户已经等待了 30 秒，怎么权衡重试和放弃？",
+  "GPU 冷启动要 1 分钟，突发流量来了来不及扩容，怎么办？"
+ ],
+ pass:"知道要做 QPS 限流和 token 配额。",
+ good:"能给出五层配额体系、分布式限流实现、上游 429 的排队与多厂商切换、异步削峰 + 预留容量 + 功能降级的突发应对，以及成本异常检测与自动熔断。",
+ red:"只在应用层做了个简单的 QPS 限制；没有 token 预算；上游 429 直接抛错给用户。"},
+
+/* ============ F. AI 应用架构 ============ */
+{cat:"LLM应用工程",sub:"AI架构",diff:"进阶",type:"设计",tags:["系统设计","知识库问答"],
+ q:"设计一个企业知识库问答产品，画出整体架构并说明各模块职责。",
+ intent:"压轴设计题。综合考察 RAG、Agent、工程架构、可观测性的整体把握。",
+ ans:[
+  "接入层：Web / 移动端 / 嵌入式挂件 / OpenAPI / IM（企微、钉钉、飞书）机器人。统一收敛到一个「会话网关」，处理鉴权、租户识别、限流、会话路由。",
+  "编排层（Orchestrator）：核心。负责意图路由（判断走 RAG / SQL / 工具 / 预计算 / 转人工）、上下文组装、Agent 循环控制、流式输出编排、预算与超时控制。这一层决定了产品的能力上限。",
+  "LLM 网关层：统一封装多模型调用——路由（按任务/成本/健康度选模型）、鉴权与密钥管理、重试与降级（A 挂了切 B）、限流与排队、成本计量与归集、统一 trace 埋点、响应缓存。业务代码不直接碰厂商 SDK。",
+  "知识层（离线 pipeline）：文档接入（上传/定时同步/爬虫）→ 解析（PDF/Office/HTML/表格/OCR）→ 清洗 → 切分 → 增强（标题路径、摘要、元数据抽取）→ embedding → 写入向量库 + 关键词索引。配套：文档状态机、增量更新、删除同步、解析质检与告警。",
+  "检索层：Query 改写（指代消解、多查询扩展 HyDE / multi-query）→ 多路召回（向量 + BM25 + 元数据过滤）→ RRF 融合 → Rerank 精排 → 阈值截断 → 上下文组装（压缩、去重、位置重排）。",
+  "工具与集成层：业务系统 API（订单、工单、CRM）、数据库（NL2SQL）、企业搜索、外部 MCP Server。带权限过滤——用户看不到的东西工具也不能返回。",
+  "数据与存储：关系库（用户/会话/消息/文档元数据）、向量库、对象存储（原文档与图片）、缓存（语义缓存、embedding 缓存）、消息队列（异步任务）。",
+  "可观测与评测：全链路 trace、成本看板、质量指标（点踩率、转人工率、拒答率）、离线评测集 + CI 回归、badcase 回流。",
+  "安全合规：PII 脱敏、提示注入防护、输出内容安全过滤、审计日志、数据留存策略、租户隔离（检索时强制带租户过滤条件，不能只靠应用层）。",
+  "前端：流式渲染、引用溯源高亮、反馈入口、多轮会话管理、中断与重试。",
+  "架构原则：分层解耦 + 可替换（向量库/模型/解析引擎都可换）+ 可观测（每个环节有指标）+ 可灰度（提示词/模型/检索策略都能灰度）。"
+ ],
+ follow:[
+  "租户隔离最容易被攻破的地方是哪里？你怎么防？",
+  "这个架构里，你会把哪些部分做成可复用的中台能力？",
+  "第一个版本你会砍掉哪些模块？为什么？"
+ ],
+ pass:"能画出「文档处理 → 检索 → 生成 → 前端」的主链路。",
+ good:"能分层讲清接入/编排/LLM网关/知识pipeline/检索/工具/存储/可观测/安全九块，指出 LLM 网关与编排层的价值，强调租户隔离要在检索层强制过滤、以及分层可替换与可灰度的架构原则。",
+ red:"只画出「向量库 + 大模型」两步；没有可观测、评测、安全、限流这些生产必备模块；不知道租户隔离怎么做。"},
+
+{cat:"LLM应用工程",sub:"AI架构",diff:"进阶",type:"设计",tags:["LLM网关","中台"],
+ q:"AI 网关（LLM Gateway）应该承担哪些职责？为什么不能直接调厂商 SDK？",
+ intent:"考察平台化思维。AI 网关是 AI 应用规模化后的必然产物。",
+ ans:[
+  "统一抽象：屏蔽各家厂商 API 差异（OpenAI / Anthropic / 国产模型 / 自建 vLLM 的出入参、流式格式、错误码各不相同）。业务代码面向统一的内部协议开发，换模型只改配置。",
+  "路由与降级：按任务类型/成本/延迟要求选择模型；健康检查 + 自动故障转移（A 厂商超时或 5xx 就切 B）；按灰度比例分流。没有网关时，降级逻辑会散落在每个业务里，改一次要动几十处。",
+  "成本治理：这是网关最核心的价值之一。集中计量 token 与金额，按租户/功能/用户归因；设预算上限与告警；支持按预算自动降级（超预算切小模型）。散落调用时成本是一笔糊涂账。",
+  "限流与排队：集中管理上游 RPM/TPM 配额，请求统一排队匀速放行；多租户公平调度；突发流量削峰。",
+  "缓存：语义缓存 / 精确缓存集中实现，命中直接返回，省掉上游调用。",
+  "可观测：所有调用的 trace、日志、指标集中采集。没有统一出口，就无法保证「每次调用都被记录」。",
+  "安全合规：密钥集中管理（业务代码不持有 API Key，避免泄露）、输入输出的内容安全过滤、PII 脱敏、审计日志（谁在什么时候问了什么，合规审计的刚需）、数据出境管控。",
+  "能力增强：提示词管理（版本、渲染、灰度）、结构化输出校验、重试与自我修正、输出后处理。",
+  "什么时候可以不建：只有一个应用、一个模型、一个厂商、团队很小——这时网关是过度设计。判断标准是「调用方数量 × 模型数量」，超过 3×2 就该考虑。",
+  "现成方案：LiteLLM、Kong AI Gateway、APISIX、One API 等，通常比自研更划算，除非有强定制需求。"
+ ],
+ follow:[
+  "网关挂了，整个 AI 能力都不可用，这个单点怎么破？",
+  "网关加了一层，延迟增加多少？值得吗？",
+  "自建 vs 用 LiteLLM 这类开源方案，你怎么选？"
+ ],
+ pass:"知道网关能统一封装多模型、做路由和限流。",
+ good:"能系统列出统一抽象/路由降级/成本治理/限流排队/缓存/可观测/安全合规/能力增强八项职责，指出「没有统一出口就无法保证全量可观测与成本归因」，并能给出不建网关的边界和开源替代方案。",
+ red:"认为网关只是「包一层转发」；业务代码里到处硬编码 API Key；成本无法归因。"},
+
+{cat:"LLM应用工程",sub:"AI架构",diff:"进阶",type:"设计",tags:["多模型","故障转移","版本漂移"],
+ q:"模型切换与多模型兜底：A 厂商挂了自动切 B，工程上要注意什么？",
+ intent:"看似简单，实则坑很多。考察细节把控。",
+ ans:[
+  "接口差异是首要障碍：不同厂商的消息格式（system 消息的支持方式、多模态内容的表达）、工具调用格式、流式 chunk 结构、停止原因字段、token 计费返回都不一致。必须有适配层把各家格式归一化为内部协议，否则业务代码要写一堆 if。",
+  "提示词不可直接复用：同一份提示词在不同模型上效果差异很大，尤其是复杂指令和 few-shot。切换前必须在目标模型上跑过评测集，确认通过率可接受。否则「切是切过去了，答案质量崩了」。",
+  "参数映射：temperature 范围不同（有的 0–1，有的 0–2）、max_tokens 字段命名不同、top_p 行为有差异、有些模型不支持某些参数。要在适配层做映射与裁剪。",
+  "上下文与输出长度：不同模型上下文窗口和输出上限差异大。切换时要能自动处理——目标模型窗口更小就得压缩上下文，否则直接报错。这一层要自动降级而不是抛异常。",
+  "切换触发条件：不只是「挂了」才切。应包括：连接超时、5xx 错误率超阈值、持续 429、延迟 P95 超阈值（慢比挂更常见也更隐蔽）、输出质量异常（如空回复率突增）。用连续失败计数 + 半开探测（类似熔断器模式）而不是单次失败就切。",
+  "状态与成本：切换后要记录「这次请求实际用了哪个模型」，否则 trace 归因和成本核算全乱。成本可能变化很大（切到更贵的模型会让成本失控，要有成本上限约束）。",
+  "能力降级：目标模型可能不支持函数调用/结构化输出/视觉。切换时要判断目标模型是否具备该能力，不具备就走降级路径（如把工具调用降级为 ReAct 文本格式）或直接失败并明确告知，而不是静默出错。",
+  "演练：故障转移必须有定期演练（混沌工程），否则真出事时才发现配置是错的。这是最常见的失效原因——写了自动切换但从没测过。"
+ ],
+ follow:[
+  "切换后输出质量明显下降，用户投诉，你怎么处理？",
+  "你怎么在不影响线上的情况下验证切换链路是通的？",
+  "两个模型都超时了，怎么办？"
+ ],
+ pass:"知道要加适配层做格式转换，知道要有健康检查自动切换。",
+ good:"能讲清格式归一化、提示词需重新评测、参数与上下文长度映射、熔断式切换触发条件、切换后的成本与 trace 归因、能力降级判断，以及定期演练的必要性。",
+ red:"认为换个 base_url 和 model 名就行；切换链路从没演练过；切过去之后答案质量变了却没人发现。"},
+
+{cat:"LLM应用工程",sub:"AI架构",diff:"高阶",type:"设计",tags:["AI测试","非确定性","回归"],
+ q:"AI 应用的「非确定性」给测试带来什么挑战？你怎么测？",
+ intent:"测试是 AI 应用最容易被忽视的环节，也是资深工程师的价值所在。",
+ ans:[
+  "核心挑战：① 输出不确定——同样输入每次结果不同，传统的 assert 相等完全失效；② 没有明确的「正确」「错误」边界，只有「好/更好/差」的连续谱；③ 成功路径不唯一——同一个问题可以有不同的正确答案；④ 回归不可靠——测试偶发失败，团队会逐渐忽略红灯（这比没测试更糟）；⑤ 外部依赖不可控——模型会升级、会限流、会挂。",
+  "策略一 分层测试：单元测试测「确定性部分」（提示词渲染、上下文组装、chunk 切分、JSON 解析、重试逻辑、限流）——这部分要 100% 覆盖，用 mock 掉的 LLM；集成测试测链路；端到端测试用评测集做质量门禁。不要试图用 E2E 覆盖所有逻辑。",
+  "策略二 降低不确定性：测试环境把 temperature 设为 0、固定随机种子、固定模型版本号（不要用 latest 这种指针）。这样至少让测试可复现。",
+  "策略三 断言方式改变：不用精确匹配，改用——结构化断言（输出符合 schema、包含必填字段）、语义断言（用 LLM 判断「输出是否满足这个 rubric」）、关键事实断言（必须包含/不包含某些关键字符串）、属性断言（长度范围内、不含敏感词、引用非空）。",
+  "策略四 统计而非单次：对关键用例跑 N 次（如 5–10 次）统计通过率，断言「通过率 ≥ 80%」。单次断言会 flaky，统计断言才稳定。",
+  "策略五 离线评测集做质量门禁：每次 PR 跑评测集，指标对比主干，下降超阈值就卡住。这是防劣化的主力。",
+  "策略六 对抗测试与红线测试：提示注入用例、越权用例、敏感内容用例、应拒答用例——这些必须是硬性通过的（不允许统计通过率，必须 100%）。",
+  "策略七 线上监控兜底：测试无法覆盖一切，靠线上指标（错误率、点踩率、幻觉投诉）和抽样人工审阅做最后一道防线。",
+  "工程实践：把 LLM 调用录制成「cassette」回放（类似 VCR），让 CI 不依赖真实 API、不花钱、不 flaky。"
+ ],
+ follow:[
+  "测试经常 flaky，团队开始忽略红灯，你怎么扭转？",
+  "CI 里跑评测集要花多少钱和时间？怎么控制？",
+  "你怎么测提示注入防护？"
+ ],
+ pass:"知道 AI 输出不确定，测试不能 assert 相等。",
+ good:"能给出分层测试、降不确定性、断言方式改造、统计通过率、评测集门禁、对抗红线、线上兜底七层策略，并提出录制回放让 CI 不依赖真实 API。",
+ red:"还在用 assert 输出等于某个字符串；或者干脆说「AI 应用没法测」；测试 flaky 了就删掉。"},
+
+{cat:"LLM应用工程",sub:"AI架构",diff:"进阶",type:"设计",tags:["数据合规","PII","脱敏"],
+ q:"用户数据要进大模型，PII 脱敏、留存与审计怎么做？",
+ intent:"合规是 AI 应用的红线。5 年经验必须有这根弦。",
+ ans:[
+  "数据最小化（第一原则）：能不送的就不送。只把完成任务必需的字段放进提示词，不要把整个用户档案塞进去。很多合规问题是「顺手把什么都传了」造成的。",
+  "PII 识别：用正则（身份证、手机号、银行卡、邮箱）+ NER 模型（人名、地址、组织）+ 自定义词典（内部工号、客户名）。识别要有覆盖率的度量，不能「觉得识别得挺全」。",
+  "脱敏策略（按场景选）：① 掩码（138****1234）——保留格式便于模型理解结构；② 令牌化（替换成 TOKEN_001，服务端保留映射表，模型返回后还原）——这是最实用的方案，模型能正常推理且真实数据不出域；③ 完全删除；④ 泛化（把精确年龄换成年龄段）。",
+  "令牌化的关键工程点：映射表要加密存储、有访问控制、有生命周期；还原只在服务端出口做，前端/日志/trace 里始终是脱敏后的内容；Agent 场景下模型可能在多轮里引用令牌，映射要在会话级别保持一致。",
+  "传输与存储：传输全程 TLS；提示词与输出如果要落库（用于 trace 和评测），必须脱敏后存储、加密、设留存期限（如 90 天）并有自动清理任务；trace 的访问控制要严格（能看到 trace 等于能看到用户数据）。",
+  "厂商侧：商业 API 要确认——数据是否用于训练（选不用于训练的套餐/条款）、留存多久、存在哪个区域、是否有 DPAA/BAA 之类协议。跨境场景要确认数据不出境，否则只能私有化部署。",
+  "审计：记录「谁在什么时间、哪个功能、向哪个模型发送了什么（脱敏后）、返回了什么」。审计日志本身也要防篡改。这类日志是合规审计和事故追溯的依据。",
+  "输出侧：模型可能把训练数据里的 PII 或输入里的 PII 复述出来，输出要做一遍 PII 检测再返回给用户；敏感内容要有过滤（涉政、涉黄、违法内容）。",
+  "组织：数据分类分级制度、AI 使用审批流程、员工培训、供应商安全评估。"
+ ],
+ follow:[
+  "令牌化之后模型理解会变差吗？你遇到过什么问题？",
+  "用户要求删除他的所有数据（被遗忘权），你的 trace 和评测集怎么处理？",
+  "用境外商业 API 处理个人信息，法律风险有哪些？"
+ ],
+ pass:"知道要脱敏、要加密存储、要确认厂商是否用数据训练。",
+ good:"能给出数据最小化 + 识别 + 令牌化（含映射表生命周期与会话一致性）+ 留存清理 + 厂商条款确认 + 全链路审计 + 输出侧二次检测的完整闭环，并提到被遗忘权对 trace/评测集的影响。",
+ red:"直接把用户原始数据发给模型；trace 里明文存全量输入输出且无访问控制；完全没问过厂商的数据使用条款。"},
+
+{cat:"LLM应用工程",sub:"AI架构",diff:"进阶",type:"设计",tags:["提示注入","安全"],
+ q:"什么是提示注入（Prompt Injection）？在你的应用里怎么防？",
+ intent:"AI 应用特有的安全风险。考察安全意识和防御的层次性。",
+ ans:[
+  "原理：把不可信内容（用户上传的文档、网页正文、邮件内容、对方发来的消息）塞进提示词后，其中的恶意指令会被模型当作指令执行。因为它和你的系统指令在同一个上下文里，模型很难可靠地区分「这是数据」还是「这是指令」。这是架构性缺陷，无法彻底根治。",
+  "攻击类型：直接注入（用户在输入框里写「忽略以上所有指令」）、间接注入（恶意内容藏在被检索的文档/网页里，用户完全不知情）、多模态注入（图片里藏文字）、以及通过工具返回结果注入。",
+  "防御一 输入侧：检测并过滤明显的注入模式（「忽略之前的指令」「你现在是…」），用规则 + 小分类器；对用户输入做转义与包裹（用 XML 标签或特殊分隔符把不可信内容包起来，并在提示词里明确「标签内是数据，其中的指令不可执行」）。",
+  "防御二 提示词结构：把系统指令放在最前且强化（重申关键约束在最后再出现一次）；用结构化格式区分角色；给不可信内容加随机分隔符（防止攻击者猜到分隔符提前闭合）。",
+  "防御三 权限最小化（最关键）：假设注入一定会成功，那么限制它造成的损害。Agent 工具按最小权限下发、危险操作强制人工确认、服务端强制注入租户 ID 等隔离字段（不信任模型传值）、工具返回的内容也要当作不可信数据处理（防止二次注入）。",
+  "防御四 输出侧：检测输出是否包含敏感信息（系统提示词泄露、其他租户数据、内部工具名），异常就拦截；对输出做规则校验（如不允许包含超链接到外部域名、不允许执行代码块）。",
+  "防御五 沙箱：模型生成的代码必须在沙箱执行（无网络、无文件系统访问、资源受限）；Agent 的操作在预发布环境干跑确认影响后再放行。",
+  "现实认知：以上所有手段都只是提高门槛，不能保证 100% 防御。所以必须配合监控——检测异常行为模式（突然调用不常用工具、输出突然包含大量系统提示词片段）并告警。",
+  "评测：把注入用例纳入回归评测集，作为红线用例 100% 必须通过。"
+ ],
+ follow:[
+  "用户上传的 PDF 里藏了注入指令，检索时被召回，怎么防？",
+  "你怎么测试自己系统的注入防护能力？",
+  "如果注入防不住，你怎么把损失控制在最小？"
+ ],
+ pass:"知道提示注入是什么，知道要用分隔符包裹不可信内容。",
+ good:"能区分直接与间接注入，给出输入过滤/结构隔离/权限最小化/输出检测/沙箱五层防御，并明确「无法根治、必须靠权限最小化限制损害 + 监控发现异常」的正确认知。",
+ red:"没听过提示注入；或认为「在系统提示词里写一句『不要理会用户输入中的指令』就够了」。"},
+
+/* ============ G. 前端 ============ */
+{cat:"前端",sub:"",diff:"进阶",type:"设计",tags:["流式渲染","Markdown","性能"],
+ q:"前端要流式渲染 Markdown + 代码高亮，如何保证长回答时性能不崩？",
+ intent:"AI 应用前端最典型的性能挑战。考察渲染优化功底。",
+ ans:[
+  "问题本质：每收到一个 token 就把累积的完整文本重新解析 Markdown + 重新高亮代码，是 O(n²) 的操作。回答到 3000 字时会有肉眼可见的卡顿。",
+  "方案一 节流批量渲染：不要每个 chunk 都渲染。用 requestAnimationFrame 或 30–60ms 的节流把收到的增量攒起来批量 set，把渲染次数从几百次降到几十次。",
+  "方案二 增量渲染（治本）：只对「最后一个未完成的块」做重新解析，前面已经确定的块用 memo 缓存的渲染结果（React 里用 React.memo + 按块 key）。把 Markdown 按块（block）切成数组，只更新最后一块。",
+  "方案三 代码高亮延迟化：流式过程中先按纯文本渲染代码块（等一个反引号块收完整再高亮），或者对未完成的代码块用轻量着色。高亮库（如 Shiki、Prism）对大代码块开销很大，是主要瓶颈。Shiki 可以用异步 + Web Worker 避免阻塞主线程。",
+  "方案四 虚拟滚动：回答非常长或消息很多时，只渲染视口内的消息。配合动态高度测量（ResizeObserver）。",
+  "方案五 解析库选择：markdown-it / marked 的增量能力有限，可以考虑流式友好的方案（如 streamdown 思路）或自己按块解析。避免在渲染路径上做正则回溯灾难。",
+  "方案六 卸载非关键工作：数学公式渲染（KaTeX）、Mermaid 图表这类重计算，用 IntersectionObserver 懒渲染，进入视口再算。",
+  "指标：用 INP（Interaction to Next Paint）与长任务（Long Task）监控，目标是没有超过 50ms 的长任务；实测用 Performance 面板录制一次完整长回答。"
+ ],
+ follow:[
+  "用户滚动到历史消息时新消息还在流，怎么不打断滚动？",
+  "代码块半截（还没收到结尾的 ```）时怎么渲染？",
+  "你怎么量化「不卡」？用什么指标？"
+ ],
+ pass:"知道要节流，知道代码高亮是瓶颈。",
+ good:"能指出 O(n²) 的本质问题，给出节流 + 增量块级渲染 + 高亮延迟化 + 虚拟滚动 + 懒渲染重计算的组合方案，并用 INP / Long Task 做量化验证。",
+ red:"每个 chunk 直接 setState 全量重渲染；没有做任何优化且没意识到有问题。"},
+
+{cat:"前端",sub:"",diff:"进阶",type:"设计",tags:["状态管理","会话"],
+ q:"AI 会话的状态管理：会话列表 + 流式消息 + 多标签页 + 离线缓存，怎么设计状态结构？",
+ intent:"考察前端架构能力，AI 应用的状态复杂度远高于普通 CRUD。",
+ ans:[
+  "状态分类：① 服务端状态（会话列表、历史消息）——用 TanStack Query / SWR 管理，带缓存、失效、重试，不要塞进全局 store；② 客户端状态（当前会话 ID、输入框草稿、UI 状态）——用 Zustand / Redux；③ 流式瞬时状态（正在生成的消息）——单独管理，不混入持久状态，生成结束后再落库并合入历史。这个三分法是关键。",
+  "数据结构：消息用「规范化存储」（normalized）——messages: Record<id, Message> + messageIdsBySession: Record<sessionId, id[]>。避免深层嵌套数组带来的更新性能问题和不可变更新的复杂度。",
+  "流式消息处理：正在生成的消息用一个单独的 streamingMessage 字段，生成过程中只更新它；生成完成后 dispatch 一条完整消息进列表并清空 streaming。避免「每收到一个 token 就更新整个消息数组」。",
+  "乐观更新：用户发消息后立刻在 UI 显示（乐观插入），请求失败再标记失败并允许重试。流式场景下尤其重要，否则用户会感觉点击没反应。",
+  "多标签页同步：用 BroadcastChannel 或 storage 事件同步（如「另一个标签页正在生成」）；更严格的场景用服务端推送 + 本地事件总线。要防止两个标签页同时触发同一个会话的生成请求（用一个锁或服务端幂等）。",
+  "草稿与离线：输入框草稿存 localStorage（按会话 ID），刷新不丢；离线时提示不可用而不是让用户白写。",
+  "持久化：会话列表与最近消息可以存 IndexedDB（localStorage 容量不够）；敏感内容要注意——浏览器端持久化用户对话有隐私风险，需评估是否加密或干脆不存。",
+  "清理：会话切换时要中止上一个会话的流式请求（AbortController），否则会出现「切走了还在往旧会话里塞内容」的 bug。"
+ ],
+ follow:[
+  "两个标签页同时发消息，怎么避免重复生成？",
+  "会话历史有几千条消息，一次性加载会卡，怎么处理？",
+  "刷新页面时正在生成的消息怎么处理？"
+ ],
+ pass:"知道要区分服务端状态和客户端状态，知道流式消息要单独管理。",
+ good:"能给出「服务端/客户端/流式瞬时」三分法、规范化存储结构、乐观更新、多标签页同步与并发锁、切换会话时中止流的完整设计，并考虑到端上持久化的隐私风险。",
+ red:"所有状态塞进一个全局对象；每个 token 更新整个消息数组；切换会话不中止旧请求。"},
+
+{cat:"前端",sub:"",diff:"基础",type:"概念",tags:["SSE","WebSocket","协议"],
+ q:"SSE、WebSocket、长轮询在 AI 会话场景怎么选？各自的坑是什么？",
+ intent:"基础协议题，考察对 AI 场景特殊性的理解。",
+ ans:[
+  "AI 会话的通信特征是「客户端发一次，服务端持续推一段，直到生成结束」，本质是单向流。SSE 最契合：基于 HTTP/1.1（或 HTTP/2）、浏览器原生支持自动重连、协议简单、能过绝大多数代理和网关。",
+  "WebSocket 是全双工，优势在于客户端也要持续高频上行——AI 场景里对应的是语音实时流、实时协同编辑、需要服务端主动推送非请求触发的消息（如后台任务完成通知、多人协作广播）。为了单向流式而上 WebSocket 是过度设计，且要自己处理心跳、重连、断线续传。",
+  "长轮询：兼容性最好（能过最严格的防火墙/老代理），但延迟和资源开销都大。只作为兜底（检测 SSE 不可用时降级）。",
+  "SSE 的坑：① 原生 EventSource 不支持 POST 和自定义 Header（无法带 Authorization），AI 请求通常需要带 body 和鉴权——解法是用 fetch + ReadableStream 自己解析 SSE 格式，或用 query 参数带短期 token；② 浏览器对同一域名的 HTTP/1.1 并发连接有上限（6 个），开多个会话流会互相阻塞——HTTP/2 可缓解；③ Nginx 默认 proxy_buffering 会缓冲数据，必须关闭；④ 负载均衡器/网关的空闲超时会掐断连接，要发心跳。",
+  "WebSocket 的坑：① 某些企业代理和防火墙会阻断 Upgrade 请求；② 需要自己实现心跳、重连、消息序号与去重；③ 负载均衡需要会话保持或专门的 WS 支持；④ 移动端弱网下频繁重连。",
+  "兜底策略：优先 SSE，失败降级到长轮询；错误信息要可诊断（前端能区分是网络断、服务端错、还是流被掐断）。",
+  "补充：HTTP/2/3 下 SSE 的并发限制问题消失，但现在很多中间设备仍会缓冲，生产上要在真实网络环境下验证。"
+ ],
+ follow:[
+  "企业客户的网络环境里 SSE 经常不通，你怎么处理？",
+  "同时开 10 个会话流，浏览器并发限制怎么办？",
+  "你怎么区分「生成结束」和「连接异常断开」？"
+ ],
+ pass:"知道 SSE 适合 AI 流式，WebSocket 是双向的。",
+ good:"能给出明确的选型结论与理由，讲清 SSE 的四个实战坑（EventSource 不能带 header、并发上限、Nginx 缓冲、网关超时）和 WebSocket 的适用边界，并有降级策略。",
+ red:"不加区分地说「用 WebSocket」；不知道 EventSource 不能自定义 header；不知道要关代理缓冲。"},
+
+{cat:"前端",sub:"",diff:"进阶",type:"设计",tags:["虚拟滚动","长列表"],
+ q:"聊天窗口积累了几千条消息，怎么保证滚动和渲染性能？",
+ intent:"长列表是 AI 对话应用的标配难题。",
+ ans:[
+  "核心方案：虚拟滚动（Virtual Scrolling）——只渲染视口内及缓冲区内的消息，DOM 节点数保持在几十个而不是几千个。用 react-window / react-virtuoso 等库。",
+  "AI 场景的特殊难点：消息高度不固定（长短差异大、有代码块、有表格、有图片），且流式过程中最后一条消息高度在持续增长。解决方案是动态高度测量——渲染后测量实际高度并缓存（ResizeObserver），用估算高度做初始占位。react-virtuoso 对这类场景支持较好。",
+  "滚动锚定（关键体验点）：① 流式生成时，如果用户已经在底部，要自动跟随滚动；如果用户往上翻看历史，绝不能强制拉回底部（这是最常见的糟糕体验）。判断依据：滚动位置距底部是否小于某阈值。② 加载历史消息（向上无限滚动）时，要保持当前视觉位置不跳动——需要记录锚点消息的位置偏移，加载后恢复。",
+  "分页加载：历史消息按游标分页，向上滚动到顶部时加载上一页。要注意加载时不要触发连锁加载，以及重复消息的去重（按消息 ID）。",
+  "图片/富媒体的影响：图片加载完成后高度变化会导致跳动。解决：在 Markdown 里给图片预设宽高比占位（从 Markdown 语法或服务端返回的尺寸信息），或在 img onload 后校正位置。",
+  "渲染优化：消息组件用 React.memo 避免无关重渲染；避免在渲染路径做重计算（Markdown 解析结果缓存）；代码高亮结果缓存。",
+  "搜索：几千条消息里搜索，前端全量过滤会卡。做法是用 Web Worker 做搜索，或把搜索下放到服务端（更实际）。"
+ ],
+ follow:[
+  "流式生成时用户往上翻，怎么不打断他？",
+  "消息里有图片，加载后高度变化导致跳动，怎么解决？",
+  "向上加载历史消息后滚动位置跳了，怎么修复？"
+ ],
+ pass:"知道用虚拟滚动，知道要分页加载历史。",
+ good:"能讲清动态高度测量与缓存、滚动锚定的两种场景（自动跟随 vs 不打断上翻 / 加载历史保持位置）、图片占位的高度稳定方案，以及渲染缓存与搜索的异步化。",
+ red:"一次性渲染所有消息；流式时无条件拉到底部导致用户无法翻看历史。"},
+
+{cat:"前端",sub:"",diff:"进阶",type:"排障",tags:["错误处理","降级","重试"],
+ q:"前端错误处理：LLM 返回半截 JSON、网络中断、token 过期，如何优雅降级？",
+ intent:"考察健壮性设计。AI 应用的失败模式比传统应用多得多。",
+ ans:[
+  "先分类：① 可重试的瞬时错误（网络中断、5xx、429）——自动重试 + 指数退避；② 需用户介入的（token 过期、权限不足、配额用完）——静默刷新 token 或引导重新登录/升级套餐；③ 内容类错误（模型输出非法 JSON、被安全过滤拦截、内容为空）——降级展示或转人工；④ 不可逆的（任务超时、服务端彻底失败）——保留上下文让用户重试。",
+  "半截 JSON / 流式中断：前端要有「不完整状态」的展示能力——显示已生成的部分内容，并标注「生成中断」，提供「重新生成」和「继续生成」（若后端支持续传）两个选项。绝不能因为解析失败就把已收到的内容全丢掉。",
+  "增量解析的容错：自己实现 SSE 解析时要能处理跨 chunk 的半个事件、半个 JSON；解析失败不应让整个流中断，而是跳过这一个事件继续。",
+  "token 过期：用拦截器统一处理 401——静默刷新（refresh token）后自动重放原请求；刷新失败才跳登录，并保存当前草稿与会话位置，登录后恢复。流式请求比较特殊（已经发出去了），要从一开始就带有效 token 或在流开始前做一次预检。",
+  "配额与限流：429 要展示明确的 Retry-After 倒计时和原因（「今日额度已用完」而不是「请求失败」），并给出升级入口。",
+  "重试的用户体验：自动重试要给用户可见的提示（「网络波动，正在重试 1/3」），超过次数后转为手动。重试要幂等——用同一个 message_id 避免重复生成两条消息。",
+  "全局兜底：Error Boundary 防止渲染崩溃导致白屏；关键路径（如发送消息）失败要有明确的失败态 UI 而不是静默无反应。",
+  "可观测：前端错误上报（Sentry 类）要包含 session_id、请求 ID，方便与后端 trace 关联排查。"
+ ],
+ follow:[
+  "生成到一半断了，用户之前的等待怎么不白费？",
+  "自动重试导致重复生成了两条消息，怎么避免？",
+  "你怎么做前端错误监控？能和后端 trace 打通吗？"
+ ],
+ pass:"知道要区分错误类型、要有重试和友好提示。",
+ good:"能给出四类错误的分类处理方式、流式中断保留已生成内容的降级 UI、增量解析容错、401 静默刷新与草稿恢复、幂等重试（同 message_id），以及前后端 trace 关联。",
+ red:"所有错误都 toast 一句「请求失败」；解析失败就丢弃全部内容；重试会产生重复消息。"},
+
+{cat:"前端",sub:"",diff:"进阶",type:"设计",tags:["嵌入式","SDK","跨域"],
+ q:"做一个可嵌入客户网站的 AI 客服挂件（iframe 或 SDK），跨域和安全怎么做？",
+ intent:"考察 B 端交付经验。嵌入式 AI 组件有独特的安全与兼容挑战。",
+ ans:[
+  "形态选择：iframe 方案隔离性最好（CSS 和 JS 完全隔离，不会和客户页面样式/依赖冲突），集成成本最低（客户贴一段 script）；SDK 方案（原生 Web Component + Shadow DOM）体验更好（没有 iframe 的高度、滚动、层级问题），但样式隔离要靠 Shadow DOM、且受客户 CSP 影响。B 端交付优先 iframe，对体验要求高的用 SDK。",
+  "跨域通信：iframe 用 postMessage，必须校验 event.origin 白名单（否则任何页面都能给你的 iframe 发消息）；SDK 方案要注意 JS 全局污染（用 Shadow DOM 隔离样式、单一命名空间、不依赖全局库版本）。",
+  "样式与布局冲突：iframe 是最彻底的隔离；SDK 用 Shadow DOM + CSS 变量暴露可配置项；避免使用 !important 和全局选择器；z-index 要给到一个足够高且有文档说明的值。",
+  "鉴权与租户识别：嵌入代码里带一个「站点 ID / 公钥」用于识别租户，但敏感操作（如查询订单）的鉴权不能只依赖这个——它暴露在客户页面源码里，任何访客都能看到。正确做法是：挂件初始化时向服务端换取一个有时效的会话令牌，并且该令牌只拥有访客级权限；涉及用户身份的操作要用客户系统自己的登录态（通过签名 JWT 传递）。",
+  "CSP 兼容：客户站点可能有严格 CSP，你的脚本需要 nonce 或要求客户把你域名加入白名单。要在文档里说明，并提供降级方案。",
+  "性能：脚本异步加载（async/defer）、体积要小（挂件首屏 JS 控制在几十 KB）、不能拖慢客户站点；懒加载——用户点击挂件图标后才加载主体资源。",
+  "隐私与合规：挂件会读到客户站点的 URL、可能读 cookie——要有明确的隐私声明和开关；不要在第三方上下文里存敏感数据。",
+  "可观测：挂件在客户站点出错你看不到——必须内置错误上报，并带上站点 ID 和版本号，用于定位「是某个客户的定制环境导致的」。"
+ ],
+ follow:[
+  "客户站点有严格 CSP，你的脚本加载不了，怎么处理？",
+  "挂件里的 AI 要调用客户内部系统查订单，权限怎么设计才安全？",
+  "iframe 高度自适应怎么做？"
+ ],
+ pass:"知道用 iframe 隔离，用 postMessage 通信。",
+ good:"能对比 iframe 与 SDK 的取舍，讲清 postMessage 的 origin 校验、嵌入口令不能当鉴权（要换短期会话令牌 + 客户侧签名 JWT）、CSP 兼容、懒加载性能，以及第三方环境的错误上报。",
+ red:"把租户密钥直接写在嵌入代码里；postMessage 不校验 origin；不做 CSP 兼容导致部分客户无法使用。"},
+
+{cat:"前端",sub:"",diff:"基础",type:"概念",tags:["性能指标","Core Web Vitals"],
+ q:"Core Web Vitals（LCP / INP / CLS）在 AI 应用里有什么特殊挑战？",
+ intent:"考察是否把性能当工程指标而不是玄学。",
+ ans:[
+  "三个指标的含义：LCP（最大内容绘制，首屏加载）、INP（交互到下次绘制，响应性）、CLS（累积布局偏移，视觉稳定性）。",
+  "LCP 在 AI 应用里的挑战：首屏往往是「等待 AI 返回」，LCP 元素可能是骨架屏或历史消息。优化重点是让首屏有价值内容尽快出现——历史会话本地缓存直出（不等网络）、骨架屏设计、关键资源预加载。",
+  "INP 是 AI 应用最容易被拖垮的指标：流式渲染是持续的主线程占用（Markdown 解析、代码高亮、DOM 更新）。如果每次 token 到达都做全量重解析，会产生大量长任务，导致用户点击「停止」「复制」按钮无响应。这是最典型的 AI 应用 INP 问题。",
+  "CLS 的特殊挑战：① 流式内容持续增长导致页面高度变化，如果用户正在阅读上方内容会被推走；② 图片/代码块加载完成后高度突变；③ 引用来源、追问建议等延迟出现的区块插入导致跳动。解法：预留空间（骨架占位）、稳定容器高度、延迟插入的模块用固定占位。",
+  "测量方式：实验室数据（Lighthouse）只反映加载阶段，AI 应用的重头戏在交互阶段——必须用真实用户监控（RUM）采集线上 INP（web-vitals 库上报）。",
+  "AI 特有的新指标（应该自己定义）：TTFT 感知时间（用户点击发送到看到第一个字的时间）、流式流畅度（是否有卡顿/跳跃）、首字时间到完成时间的分布。这些比通用指标更贴近真实体验。",
+  "优化闭环：设定目标（如 INP P75 < 200ms）、线上监控、性能预算（JS 体积上限）、CI 里的 Lighthouse 门禁。"
+ ],
+ follow:[
+  "你们的 INP 实际是多少？最差的操作是哪个？",
+  "流式渲染导致 CLS，具体怎么解决？",
+  "除了标准指标，你会为 AI 应用定义哪些自定义体验指标？"
+ ],
+ pass:"能说出三个指标的含义。",
+ good:"能把三个指标映射到 AI 应用的具体挑战（尤其 INP 被流式渲染拖垮、CLS 因内容增长而跳动），区分实验室数据与 RUM，并提出 TTFT 感知时间等自定义指标。",
+ red:"只背了指标定义，说不出 AI 场景下的具体问题；或从未实际测量过线上指标。"},
+
+{cat:"前端",sub:"",diff:"进阶",type:"设计",tags:["代码复用","组件库","多产品线"],
+ q:"多条产品线要复用同一套 AI 能力（对话、知识库、Agent），前端代码怎么组织？",
+ intent:"考察复用架构设计能力，5 年经验应能设计中台化的前端资产。",
+ ans:[
+  "分层复用：① 基础能力层（headless）——把 AI 会话的核心逻辑（流式请求、消息状态机、重试、中断、历史管理）抽成与 UI 无关的 SDK / hooks（如 useChatSession）。这一层不含任何视觉，各产品线用自己的 UI 渲染。这是复用率最高的一层。",
+  "② 组件层——提供带默认样式的组件（消息气泡、输入框、引用卡片、思考过程折叠），但允许通过插槽（slot）/ render props / compound component 深度定制。B 端产品尤其需要「风格可定制但逻辑统一」。",
+  "③ 产品模板层——直接可用的完整页面（会话页、知识库管理页），用于快速起量。",
+  "交付形态：私有 npm 包 + 版本语义化（SemVer）+ changelog；组件库用 Monorepo（pnpm workspace / Turborepo）管理多个包，配合 Changesets 做版本发布。",
+  "样式隔离与主题：用 CSS 变量 + design token，各产品线通过覆盖变量换肤；避免强依赖某个 UI 框架（Ant Design / MUI），否则产品线技术栈不一致就集成不了——核心逻辑层必须零 UI 依赖。",
+  "跨框架复用：如果产品线用了 React / Vue 两种技术栈，逻辑层用纯 TS 实现（框架无关），再各包一层适配（React hooks / Vue composables）。这是多技术栈组织的现实解法。",
+  "与后端中台的配合：前端 SDK 对接统一的 AI 网关协议（而不是各产品线各对接一套后端），这样后端换模型/加能力时前端只需要升级 SDK 版本。",
+  "治理：明确每个包的 owner、breaking change 流程（提前通知 + 提供 codemod 自动迁移）、使用率看板（知道哪些组件真被用了，哪些该废弃）。反面教训：做一个大而全但没人用的组件库，比不复用更糟。",
+  "边界：不是所有东西都该复用。业务逻辑差异大的部分强行抽象会得到一堆配置项地狱。判断标准——「三处以上重复」才抽象，且抽象的是机制不是策略。"
+ ],
+ follow:[
+  "产品线用 React 和 Vue 两种技术栈，怎么复用？",
+  "抽象出来的组件没人用，或者各产品线都在提定制需求，你怎么应对？",
+  "SDK 发 breaking change，怎么让产品线低成本升级？"
+ ],
+ pass:"知道要抽公共组件和 hooks。",
+ good:"能给出 headless 逻辑层 / 组件层 / 模板层的三层复用结构，讲清零 UI 依赖与跨框架适配（纯 TS + 适配层）、design token 换肤、对接统一网关协议，以及 owner/codemod/使用率看板的治理机制与「三处重复才抽象」的判断标准。",
+ red:"复制粘贴代码到各产品线；或做一个大而全的组件库但没人用；抽象出配置项地狱。"},
+
+/* ============ H. 后端与数据 ============ */
+{cat:"后端与数据",sub:"",diff:"进阶",type:"设计",tags:["异步","长任务","超时"],
+ q:"一次 AI 请求可能超过 60 秒，同步 HTTP 会超时，架构上怎么改？",
+ intent:"AI 应用后端的第一道坎。考察异步化设计能力。",
+ ans:[
+  "不要试图把同步链路撑到 60 秒以上——网关、负载均衡、CDN、浏览器、移动端都有各自的超时，任何一个掐断都会导致用户白等。正确做法是异步化 + 流式。",
+  "方案一 流式（首选，适合交互式场景）：服务端边生成边推送（SSE），连接持续有数据传输就不会触发空闲超时。用户立刻看到内容，体验最好。需要网关/代理放行长连接（关缓冲、调大超时）。",
+  "方案二 异步任务（适合重任务、Agent 长流程）：请求进来 → 创建任务记录（状态 PENDING）→ 立刻返回 task_id → 后台 worker 处理 → 客户端轮询任务状态或订阅推送（WebSocket / SSE / 客户端回调 webhook）→ 完成后拉取结果。",
+  "方案三 混合（长 Agent 任务的最佳实践）：异步任务 + 流式进度。返回 task_id 的同时，客户端通过 SSE 订阅该任务的进度事件流，既能看到「第 3/8 步」的实时进展，又不依赖单条长 HTTP 请求。",
+  "任务系统要点：任务表（id、状态、入参、结果、重试次数、创建/更新时间、超时时间）；worker 用队列（Celery / BullMQ / SQS）；心跳与超时回收（worker 挂了的任务要能被重新捞起）；优先级与公平调度（避免大租户饿死小租户）。",
+  "幂等与去重：用户重复点击提交要返回同一个 task_id（用入参哈希 + 用户 ID 做幂等键），而不是创建多个任务烧钱。",
+  "取消：用户取消要能真正停掉后台任务（设置取消标志，worker 在每步检查），而不是让它继续跑完烧完预算。",
+  "超时分层：API 网关超时 > 应用超时 > 上游模型超时，要逐级收敛且留余量（如网关 120s、应用 100s、模型 90s），否则会出现「应用还在跑但网关已经断开」的资源浪费。",
+  "补偿：任务超时或失败后要有明确的终态，不能永远卡在 PENDING——用定时任务扫描超时未更新的任务并置为失败。"
+ ],
+ follow:[
+  "worker 挂了，正在处理的任务怎么不丢？",
+  "用户提交了任务然后关掉页面，任务还要继续跑吗？",
+  "任务排队很久，用户怎么知道前面还有多少？"
+ ],
+ pass:"知道要用异步任务 + 轮询或推送。",
+ good:"能给出流式 / 异步任务 / 混合三种方案及各自适用场景，讲清任务表设计、心跳回收、幂等去重、真正取消、分层超时收敛与超时补偿扫描。",
+ red:"把网关超时调到 300 秒硬扛；任务没有超时回收导致永远 PENDING；重复点击创建多个任务。"},
+
+{cat:"后端与数据",sub:"",diff:"进阶",type:"设计",tags:["任务队列","Celery","BullMQ"],
+ q:"任务队列（Celery / BullMQ 等）如何做去重、优先级、超时杀死？",
+ intent:"考察异步任务系统的工程细节把控。",
+ ans:[
+  "去重：① 提交时用「业务幂等键」（如 hash(userId + 任务类型 + 关键入参)）查是否已有未完成的同任务，有则直接返回原 task_id；② 用 Redis SETNX + TTL 做分布式锁防并发重复提交；③ 队列层去重（BullMQ 的 jobId 唯一性、Celery 配合 Redis 锁）。",
+  "优先级：① 多队列按优先级分（high / default / low），worker 按权重消费（如 70% 资源给 high）；② 队列内优先级（BullMQ 的 priority 选项、Celery 的 priority 参数，注意 RabbitMQ 支持优先级队列而 Redis 实现有限）；③ 公平调度——按租户哈希分片或者用「租户级并发限制」，防止一个大租户的批量任务饿死其他人（这是 B 端场景的刚需）。",
+  "超时：① 软超时——任务内自己检查已运行时长，接近上限时优雅收尾（保存已完成的部分）；② 硬超时——队列层配置（Celery 的 soft_time_limit / time_limit、BullMQ 的 timeout），超时后 worker 强制终止。软硬结合：软超时给任务留出保存现场的机会，硬超时是最后防线。",
+  "杀死任务：硬超时杀死要确认进程真的被回收（Celery 用 SIGTERM 后 SIGKILL）；GPU 任务尤其要注意——杀死 Python 进程时 GPU 显存可能没释放干净，需要额外的清理逻辑。",
+  "重试：区分可重试（网络、限流、临时资源不足）与不可重试（参数错误、业务规则拒绝）。指数退避 + 抖动 + 最大次数；失败进入死信队列（DLQ）供人工排查，不能静默丢弃。",
+  "可观测：队列长度、等待时长（这是用户可感知的排队体验）、处理时长分布、失败率、重试率、DLQ 大小——这些都要有监控和告警。队列长度持续增长是最直接的容量不足信号。",
+  "优雅停机：部署时 worker 要支持 graceful shutdown（不再接新任务、处理完当前任务再退出），否则每次发版都会杀掉一批正在跑的 AI 任务。",
+  "AI 场景特化：任务要携带预算（最大 token / 最大金额），执行中累计消耗，超预算就中止并保存中间结果。"
+ ],
+ follow:[
+  "队列堆积了几千个任务，你怎么快速止血？",
+  "一个任务卡了 30 分钟（模型挂起不返回），怎么发现和杀掉？",
+  "部署发版时怎么保证正在跑的任务不中断？"
+ ],
+ pass:"知道队列能做优先级和重试，知道要设超时。",
+ good:"能给出幂等去重 + 分布式锁、多队列权重 + 租户公平调度、软硬超时结合与 GPU 显存清理、死信队列、优雅停机，以及 AI 场景的任务级预算控制。",
+ red:"任务没有超时也没有重试；失败任务静默丢弃；发版直接杀掉所有 worker。"},
+
+{cat:"后端与数据",sub:"",diff:"基础",type:"设计",tags:["幂等","重复扣费"],
+ q:"幂等性怎么设计？用户重复点击导致重复扣费怎么防？",
+ intent:"后端基本功，但 AI 场景因为「昂贵且慢」而更加关键。",
+ ans:[
+  "定义：同一操作执行一次和执行多次，对系统状态产生的影响相同。AI 场景尤其重要——一次调用可能几毛钱，重复执行就是真金白银的损失。",
+  "实现一 幂等键（Idempotency Key）：客户端生成唯一 key（或服务端用「用户ID + 操作类型 + 业务参数哈希」生成），服务端在处理前先查这个 key 是否已执行过——已执行就返回首次的结果，未执行则处理并记录结果。要注意并发：用数据库唯一索引或 Redis SETNX 保证同一 key 只被处理一次。",
+  "实现二 数据库唯一约束：最可靠的兜底层。如「一个用户每天只能有一条签到记录」用 (user_id, date) 唯一索引；扣费用「订单号」唯一索引。数据库层面的约束不会因为应用逻辑 bug 而被绕过。",
+  "实现三 状态机：把操作建模成状态流转（如 待支付 → 已支付），只在期望状态下才执行转换。用带条件的更新（UPDATE ... WHERE status='pending'），靠受影响行数判断是否成功。这是防重复扣费最经典的做法。",
+  "实现四 Token 机制：进入操作页时服务端发一个一次性 token，提交时校验并作废（防表单重复提交，解决前端重复点击）。",
+  "前端配合：按钮点击后立即置为 loading 并禁用（最简单有效）；但绝不能只靠前端——网络重试、用户刷新、多标签页、脚本调用都会绕过前端限制。",
+  "分布式场景：本地锁无效，要用分布式锁（Redis Redlock 或数据库锁）。注意锁的粒度（按用户/按资源）、超时（防止死锁）、以及锁失效后的重试。",
+  "扣费场景的完整链路：订单号唯一 → 状态机条件更新 → 幂等键去重 → 对账（每日跑批核对账实一致，这是最后一道防线）。任何一环都不能省。",
+  "AI 场景特化：LLM 调用也应有幂等键——相同 prompt + 相同参数 + 相同模型版本在短时间内的重复请求，可以直接返回缓存结果，既防重复扣费又省钱。"
+ ],
+ follow:[
+  "幂等键的过期时间设多久？太短会被绕过，太长占存储，怎么定？",
+  "并发两个相同请求同时进来，都查到「没执行过」，怎么办？",
+  "扣费成功了但返回超时，用户又点了一次，怎么防重复？"
+ ],
+ pass:"知道用唯一索引和状态机防重复。",
+ good:"能给出幂等键 + 唯一约束 + 状态机条件更新 + 一次性 token 的四层设计，讲清并发下的原子性保证（唯一索引/SETNX）、分布式锁要点，以及「对账」这个最后防线，并能映射到 AI 调用的缓存去重。",
+ red:"只靠前端禁用按钮防重复；或认为加个 Redis 锁就够了，说不出状态机和数据库约束的价值。"},
+
+{cat:"后端与数据",sub:"",diff:"进阶",type:"设计",tags:["数据建模","存储","分库分表"],
+ q:"AI 应用中，会话、消息、文档、向量、这些数据的存储怎么设计？什么时候需要分库分表？",
+ intent:"考察数据建模能力，AI 应用的数据结构有其特殊性。",
+ ans:[
+  "关系库（Postgres / MySQL）——存结构化主数据：租户、用户、会话（id、标题、创建时间、最后活跃）、消息（id、会话ID、角色、内容、token数、模型、耗时、点踩状态）、文档元数据（id、租户、来源、状态、版本、切片数、解析信息）、任务、配额与计费记录。",
+  "消息表设计要点：消息是写多读多、量最大的表。要带 tenant_id（便于隔离与归档）、session_id 索引、created_at 索引；内容字段可能很大（长回答），考虑用 TEXT 而非 VARCHAR；把「生成元数据」（模型、token、成本、延迟、trace_id）单独放一列 JSON 或独立表，避免主表过宽。",
+  "向量库——只存向量 + 少量元数据 + 回表用的 ID。不要在向量库里存完整原文（浪费且难同步），原文和元数据放关系库/对象存储，检索后用 ID 回查。元数据里必须带 tenant_id、doc_id、status、版本、生效时间，用于过滤。",
+  "对象存储——原文档（PDF/图片）、解析后的中间产物、用户上传的附件。关系库存 URL 与元信息。",
+  "缓存（Redis）——会话草稿、流式中间态、语义缓存、限流计数、embedding 缓存。",
+  "向量与关系库的一致性：这是最容易出问题的地方。用「文档状态机 + 映射表」维护 doc → chunks → vector_ids 的关系，删除时批量精确删除；定期做一致性巡检（对比关系库里的文档数和向量库里的向量数，发现孤儿数据）。",
+  "分库分表时机（不要过早）：单表行数超过千万到几千万、且索引和查询优化已经做到位仍然慢；或写入 QPS 超过单库承载能力。AI 应用的消息表最容易先到瓶颈。",
+  "分片策略：优先按 tenant_id 分片（B 端 SaaS 天然适合，且查询几乎都带租户条件）；其次按时间（消息表按月/季度分区，冷数据归档）。避免按 session_id 哈希——会导致按用户的查询要跨分片。",
+  "更轻量的先手：在分库分表之前，先做——分区表（Partition）、冷热分离（3 个月前的会话归档）、读写分离、索引优化、以及大字段垂直拆分。这些成本低得多。",
+  "ES/搜索：如果需要全文检索历史消息或文档，用 ES 同步一份索引，而不是在关系库上做 LIKE 查询。"
+ ],
+ follow:[
+  "向量库和关系库数据不一致（有孤儿向量），怎么发现和清理？",
+  "消息表一个月涨 5000 万行，你的演进路线是什么？",
+  "多租户下，你怎么保证一个租户的查询绝对拿不到另一个租户的数据？"
+ ],
+ pass:"知道消息/会话放关系库、向量放向量库、文件放对象存储。",
+ good:"能讲清各存储的职责边界、向量库只存 ID 与过滤元数据、doc→chunk→vector 映射与一致性巡检、按 tenant_id 的分片策略与冷热分离等先手优化，以及租户隔离的强制过滤。",
+ red:"把所有数据（包括原文和完整元数据）都塞进向量库；没有一致性巡检；一上来就分库分表。"},
+
+{cat:"后端与数据",sub:"",diff:"进阶",type:"设计",tags:["缓存","语义缓存","命中率"],
+ q:"LLM 结果的缓存 key 怎么设计？命中率怎么提升？",
+ intent:"考察缓存设计的严谨性。AI 缓存的最大风险是「返回了不该复用的答案」。",
+ ans:[
+  "精确缓存：key = hash(model + 模型版本 + 完整提示词 + 解码参数)。必须包含解码参数（temperature、top_p 等）——同样的提示词 temperature=0 和 0.8 结果完全不同。还要注意 temperature > 0 时缓存的意义有限。",
+  "模型版本是关键：商业 API 的 latest 指针会静默升级，如果用 latest 做缓存 key，模型变了缓存还在命中，等于在骗自己。必须用具体的版本号/快照日期。",
+  "语义缓存：key 不是字符串而是 query 的 embedding，通过向量相似度检索（阈值通常 0.92–0.97）找可复用的历史答案。",
+  "语义缓存的复合条件（最重要）：光 query 相似不够，还必须同时满足——① 提示词版本相同；② 模型版本相同；③ 知识库版本/数据状态相同（RAG 场景下文档更新了，旧答案就失效）；④ 用户/租户的权限范围相同（不能把 A 租户的答案给 B 租户，这是严重的数据泄露）；⑤ 未过 TTL；⑥ 无个性化上下文差异（如用户画像不同）。任何一条不满足都不能命中。",
+  "失效策略：知识库文档更新时，要能主动失效相关的缓存。做法是在缓存条目上记录它「依赖了哪些 doc_id」，文档更新时按 doc_id 反查失效；做不到精确失效就依赖短 TTL + 知识库版本号参与 key。",
+  "提升命中率的手段：① Query 归一化（去空格、繁简转换、同义改写归一、去除礼貌用语「请帮我…」）；② 分离「可变部分」——把系统提示词、RAG 内容这些固定部分与用户变量分开，让语义缓存只比对用户意图；③ 提高阈值同时用 rerank 二次确认，避免误命中；④ 针对高频 FAQ 预热缓存；⑤ 分层缓存——先查精确缓存（最快最便宜）再查语义缓存。",
+  "不该缓存的：时间敏感（「今天…」「最新…」）、个性化强的、随机创作类（写诗、起名）、单次会话依赖上下文的多轮中间轮次（只缓存首轮）。",
+  "度量：命中率、误命中率（需要人工抽检或用户对缓存答案的点踩率单独统计）。只看命中率而不看误命中率是危险的——缓存把错误答案复用千次的损失远大于收益。",
+  "成本收益：语义缓存本身要跑一次 embedding（有成本），命中率低于 5% 时可能不划算，要算清楚。"
+ ],
+ follow:[
+  "怎么检测缓存误命中？",
+  "知识库更新后，缓存怎么失效？精确失效做不到怎么办？",
+  "你们的实际命中率是多少？什么场景最高？"
+ ],
+ pass:"知道缓存 key 要包含模型和参数，知道有语义缓存。",
+ good:"能给出语义缓存的六项复合条件（尤其知识库版本与租户权限）、基于 doc_id 依赖的主动失效、提升命中率的归一化与分层策略、不该缓存的场景，以及「误命中率」这个被忽视的关键指标。",
+ red:"只用用户问题字符串做 key 做精确缓存；或用 latest 模型版本做 key；语义缓存不考虑租户隔离和知识库版本（会导致数据泄露和过期答案）。"},
+
+{cat:"后端与数据",sub:"",diff:"进阶",type:"设计",tags:["分布式锁","并发"],
+ q:"多人同时编辑同一个知识库 / 触发同一个重建索引，并发怎么控制？",
+ intent:"并发控制的经典问题，AI 场景的代价更高（重建索引很贵）。",
+ ans:[
+  "先分类：① 幂等的、可重入的操作（重复触发重建索引）——只需要去重，不需要互斥；② 有状态冲突的操作（同时修改同一篇文档）——需要互斥或冲突检测；③ 需要顺序保证的（先删除后重建）——需要串行化。",
+  "分布式锁（Redis）：用 SET key value NX PX ttl 获取锁，value 存唯一标识（防误删别人的锁），释放时用 Lua 脚本比对 value 再删（这是必须的，直接 DEL 会误删）。锁必须有过期时间防死锁。",
+  "锁的粒度：按资源粒度加锁（doc:{id}、kb:{id}）而不是全局锁，否则并发度会极差。",
+  "锁超时问题：任务执行时间超过锁 TTL 会导致「锁失效了但任务还在跑」，另一个请求拿到锁开始并发操作。解法：① 用 Redisson 的 watchdog 自动续期；② 或改用「租约 +  fencing token」（每次获取锁返回递增序号，操作时校验自己的 token 仍是最新，旧的直接拒绝）——这是更严谨的方案。",
+  "替代方案（常常更好）：① 数据库乐观锁——加 version 字段，UPDATE ... WHERE version = N，影响行数为 0 说明被改过，让客户端重试或提示冲突。适合「编辑冲突」场景，比分布式锁简单且无死锁风险。② 数据库唯一约束做幂等/去重。③ 状态机 + 条件更新——只有 status=IDLE 才允许发起重建，天然去重。",
+  "重建索引这类重任务：更适合用「任务去重 + 队列串行」而不是锁——同一个知识库同时只跑一个重建任务（用队列的 jobId 唯一性或数据库唯一约束），后来的请求返回已有任务的 ID 让前端订阅进度，而不是阻塞或拒绝。",
+  "冲突提示（B 端协作场景）：多人同时编辑同一文档时，除了技术手段还要有产品方案——实时协同（CRDT/OT）或者「检测到他人正在编辑」的提示 + 覆盖警告。",
+  "可观测：锁等待时间、锁获取失败率、任务排队时长——锁竞争激烈说明粒度设计有问题。"
+ ],
+ follow:[
+  "锁过期了但任务没跑完，另一个请求进来了，怎么防？",
+  "什么时候用乐观锁，什么时候用分布式锁？",
+  "Redis 主从切换导致锁丢失，怎么办？"
+ ],
+ pass:"知道用 Redis SETNX 加分布式锁，知道要设过期时间。",
+ good:"能区分去重/互斥/串行三类需求，讲清 Lua 脚本防误删、watchdog 续期与 fencing token、以及用乐观锁/状态机/队列去重替代分布式锁的更优方案，并能给出重建索引应按「任务去重 + 订阅进度」来做的正确设计。",
+ red:"直接用 DEL 释放锁（可能删除别人的锁）；锁没有过期时间导致死锁；所有并发问题都上全局锁。"},
+
+{cat:"后端与数据",sub:"",diff:"进阶",type:"设计",tags:["文件上传","异步解析","状态机"],
+ q:"用户上传 100MB 的 PDF，怎么做到断点续传 + 异步解析 + 状态可查？",
+ intent:"考察文件处理 pipeline 的完整设计，知识库产品的必备能力。",
+ ans:[
+  "上传环节：不要用普通表单直接 POST 大文件（超时、内存爆、失败重来）。用分片上传——前端把文件切成 5–10MB 的片，支持并发上传、失败重试单分片、前端记录进度；服务端按 (文件哈希 + 分片序号) 存片，全部到齐后合并。",
+  "秒传：先算文件哈希（前端算或前后端配合，大文件用抽样哈希提速），服务端查到已存在就直接返回成功，省掉整个上传过程。",
+  "断点续传：上传前先查「这个文件已上传了哪些分片」，只传缺失的。前端要把进度持久化到 localStorage，用户刷新页面也能续传。",
+  "直传（性能与成本最优）：服务端签发一个有时效的对象存储预签名 URL（S3 Presigned / OSS STS），前端直传到对象存储，不走应用服务器。这样不占用服务器带宽和资源。上传完成后通知服务端登记。",
+  "安全：文件哈希校验、类型校验（不能只看扩展名，要检查 magic number）、大小限制、病毒扫描、限制可上传的租户配额。预签名 URL 要限制路径和大小。",
+  "异步解析：上传完成后立即返回 file_id 并把解析任务丢进队列（状态 PENDING）。worker 做：格式识别 → 解析 → 清洗 → 切分 → embedding → 写库。每步更新状态与进度百分比。",
+  "状态机：UPLOADING → UPLOADED → PARSING → CHUNKING → INDEXING → READY / FAILED（带失败原因）。前端通过轮询或 SSE 订阅进度。状态要落库，服务重启不丢。",
+  "失败处理：解析失败要给出具体原因（加密 PDF、损坏、页数超限、不支持的格式），提供重试；重试次数上限，进 DLQ 供排查。",
+  "大文件特有问题：页数极多（500 页）解析耗时长，要分片并行处理；扫描件走 OCR 更慢；单个文档产生几千个 chunk 时，embedding 要批量 + 限流（避免打爆模型服务）。",
+  "清理：上传中断产生的孤儿分片要定时清理；解析失败的中间产物也要清理，否则存储成本会悄悄涨上去。"
+ ],
+ follow:[
+  "文件传到 90% 断网了，重连后怎么继续？",
+  "500 页的 PDF 解析要 10 分钟，用户等不了，怎么给反馈？",
+  "怎么防止有人传恶意文件（超大、木马、伪装类型）？"
+ ],
+ pass:"知道分片上传和秒传，知道解析要异步。",
+ good:"能给出分片 + 秒传 + 断点续传 + 预签名直传的完整上传方案（含安全校验），以及状态机驱动的异步解析 pipeline、进度反馈、失败重试与孤儿文件清理，并能处理大文件页数多、OCR 慢、embedding 需限流等实际问题。",
+ red:"直接 POST 整个大文件到应用服务器；没有断点续传；解析同步执行导致请求超时；没有孤儿文件清理。"},
+
+{cat:"后端与数据",sub:"",diff:"基础",type:"概念",tags:["API设计","REST","GraphQL"],
+ q:"REST vs GraphQL vs tRPC，AI 应用场景下怎么选？",
+ intent:"API 设计选型，考察是否能基于场景而非偏好做判断。",
+ ans:[
+  "REST：最通用、生态最成熟、缓存友好（HTTP 缓存语义）、对外部集成方最友好。B 端开放 API、对外暴露能力时首选。缺点：多端点、容易过取/欠取、需要维护文档（OpenAPI）。",
+  "GraphQL：客户端按需取字段，适合多端（Web/iOS/Android）数据结构差异大、前端迭代快的场景。缺点：缓存复杂、性能调优难（N+1 问题）、安全（查询深度/复杂度限制）、学习成本、对开放 API 不友好（外部集成方更喜欢 REST）。",
+  "tRPC：TypeScript 全栈下端到端类型安全，开发体验极佳、零 schema 维护成本。缺点：强绑定 TS 全栈，无法给非 TS 客户端用，不适合开放 API。",
+  "AI 场景的特殊性：① 大量交互是「流式」——这是三者都没有原生优雅支持的能力。SSE + REST 是目前最实用的组合，GraphQL 的 subscription 也可以但生态和网关支持弱。② 请求是「重且慢」的——需要幂等、任务化、可取消，这些与 API 风格无关，是架构层的事。③ 数据结构相对简单（会话、消息、文档）——没有复杂的图状关联，GraphQL 的优势发挥不出来。",
+  "务实结论：内部前后端同构 TS 项目 → tRPC 或 REST + OpenAPI 代码生成（都能拿到类型安全）；对外开放 API → REST（+ OpenAPI 文档 + SDK）；多端且数据结构差异大 → GraphQL；流式场景 → REST + SSE。",
+  "AI 应用的 API 设计要点（比风格更重要）：① 所有「重」的接口都要带幂等键；② 长任务返回 task_id 而非阻塞；③ 分页用游标而非 offset（消息列表会持续新增，offset 分页会导致重复/漏数据）；④ 错误响应要结构化（错误码 + 可读信息 + trace_id，便于定位）；⑤ 版本号从第一天就设计好（/v1/），AI 应用的能力演进很快。"
+ ],
+ follow:[
+  "AI 应用要对外开放 API，你会开放到什么粒度？直接暴露模型调用吗？",
+  "消息列表用 offset 分页会出什么问题？",
+  "流式接口的错误怎么表达？HTTP 状态码已经发出去了。"
+ ],
+ pass:"能说出三种风格的优缺点。",
+ good:"能结合 AI 场景的特殊性（流式、重且慢、数据结构简单）给出明确的选型结论，并指出幂等、任务化、游标分页、结构化错误、版本设计这些比风格更重要的工程要点。",
+ red:"凭个人偏好选型，说不出场景依据；或认为 GraphQL 天然更适合 AI 应用。"},
+
+{cat:"后端与数据",sub:"",diff:"进阶",type:"设计",tags:["认证授权","多租户","SaaS"],
+ q:"多租户 SaaS 的认证授权怎么设计？API Key、OAuth、JWT 各自用在什么场景？租户隔离怎么保证？",
+ intent:"B 端 AI 产品的地基。考察安全架构能力。",
+ ans:[
+  "认证方式的场景划分：① 用户登录 → OAuth 2.0 / OIDC + Session 或短时效 JWT；② 服务端到服务端集成 → API Key（配合 IP 白名单、权限范围、过期时间）；③ 第三方应用代表用户访问 → OAuth 授权码模式；④ 内部微服务间 → mTLS 或内部 JWT；⑤ 嵌入式挂件 / 前端直连 → 后端换发的短时效、低权限会话令牌。",
+  "JWT 要点：短时效（15 分钟）+ refresh token 轮换；不要把权限列表塞进 JWT（会过期不一致且体积大），只放 userId/tenantId 这类稳定标识，权限变化时实时查或用短 TTL；密钥要能轮转（支持多 kid）；登出靠黑名单或短 TTL + 服务端会话表。",
+  "授权模型：B 端通常需要 RBAC（角色）+ 租户隔离 + 部分场景的 ABAC（如「只能看自己部门的数据」）。AI 场景还要加一层——「AI 功能权限」（哪些角色能用 AI、能用哪些 Agent、额度多少）。",
+  "租户隔离的三道防线（缺一不可）：① API 层——从认证信息里解析 tenant_id，绝不接受客户端传参（这是最常见的越权漏洞来源）；② 数据访问层——所有查询强制注入 tenant_id 条件，用 ORM 全局 scope 或行级安全（Postgres RLS）在框架层保证不被遗漏；③ 存储层——向量库的检索必须带 tenant_id 过滤（很多人忘了给向量加过滤，导致跨租户检索泄露，这是 AI 应用特有的高危点）。",
+  "AI 场景的特有风险：① RAG 检索忘带租户过滤 → A 公司问到 B 公司的制度文档；② Agent 工具调用时把 tenant_id 交给模型传 → 可被提示注入篡改；③ 多租户共享同一个 LLM 上下文（极少但致命）；④ 缓存 key 不含租户 → 跨租户串数据；⑤ 评测集/trace 里混了多租户数据。",
+  "防护工程化：隔离逻辑要集中在一处（数据访问层），而不是靠每个开发记得写 where 条件；用自动化测试专门跑「跨租户访问必须失败」的红线用例；定期做越权渗透测试。",
+  "审计：所有敏感操作与 AI 调用记录 who/when/what，支持按租户导出，这是企业客户的合规刚需。"
+ ],
+ follow:[
+  "RAG 检索时租户过滤忘加了，怎么在设计上杜绝？",
+  "JWT 里放权限有什么问题？",
+  "你怎么测试跨租户越权？"
+ ],
+ pass:"知道 API Key 用于服务间、OAuth 用于用户授权，知道查询要带租户 ID。",
+ good:"能给出认证方式的场景映射、JWT 的实践细节（短时效、不塞权限、密钥轮转），以及租户隔离三道防线（尤其向量库过滤这个 AI 特有的高危点），并用框架层强制注入 + 自动化测试来杜绝人为遗漏。",
+ red:"从请求参数里取 tenant_id；向量检索不带租户过滤；不知道 RAG 会跨租户泄露。"},
+
+{cat:"后端与数据",sub:"",diff:"进阶",type:"设计",tags:["分布式事务","一致性","补偿"],
+ q:"LLM 调用成功了但写库失败（或扣费成功但消息没存下来），怎么保证一致性？",
+ intent:"AI 调用昂贵且不可回滚，一致性问题比传统接口更痛。考察分布式事务思维。",
+ ans:[
+  "先认清约束：LLM 调用是外部副作用，无法参与数据库事务，不能回滚。所以目标不是强一致，而是「最终一致 + 可补偿 + 不丢不重」。",
+  "顺序设计原则：把不可回滚的操作放在最后。典型顺序：① 先在 DB 创建消息记录（状态 GENERATING）+ 预扣配额；② 调用 LLM；③ 成功后更新消息内容与状态，并把实际消耗写进扣费流水；④ 失败则回滚预扣、标记消息失败。这样最坏情况是「预扣了但没调用」，只需退款，不会「调用了但没记录」（钱花了却没结果，用户会投诉且无法追溯）。",
+  "本地消息表 / Outbox 模式：把「要调用的外部操作」和业务数据变更写在同一个本地事务里，再由独立的投递器读取 outbox 表去真正调用，成功则标记完成。这保证了「业务状态变更」与「外部调用意图」的原子性，是分布式一致性的经典解法。",
+  "幂等：外部调用必须带幂等键，重试时不会重复产生副作用（重复扣费、重复发信、重复生成）。",
+  "补偿（Saga）：每一步都要有对应的补偿动作——预扣配额的补偿是退款、创建任务的补偿是标记取消。补偿链路本身也可能失败，所以要可重试、要有最终人工介入的入口。",
+  "对账（最后防线）：跑批任务定期比对「LLM 网关的调用记录」与「业务库的扣费流水」，找出不一致（有调用无流水 / 有流水无调用）并告警。这是所有金融级系统的必备环节，AI 计费也不例外。",
+  "状态机与超时扫描：消息/任务必须有明确的中间态与终态；用定时任务扫描长时间停留在中间态的记录，主动查询外部状态后推进或置为失败。防止因为进程崩溃导致记录永远卡住。",
+  "可观测：记录 trace_id 贯穿 DB 记录与 LLM 调用，出现「钱花了没结果」时能立刻查到这次调用的完整链路和用户是谁，便于人工补偿。"
+ ],
+ follow:[
+  "预扣和实扣不一致（预估 token 和实际差很多），怎么处理？",
+  "补偿任务自己也失败了，怎么办？",
+  "你怎么设计对账任务？多久跑一次？发现不一致怎么自动修复？"
+ ],
+ pass:"知道要用重试和补偿，知道要有对账。",
+ good:"能认清「外部调用不可回滚」的约束，给出「不可回滚操作后置」的顺序原则、Outbox 模式、Saga 补偿、对账兜底与超时扫描的完整方案，并强调 trace_id 贯穿。",
+ red:"先调 LLM 再写库，失败就丢；认为加个 try-catch 重试就行；没有对账，账实不符永远发现不了。"},
+
+/* ============ I. 架构与运维 ============ */
+{cat:"架构与运维",sub:"",diff:"高阶",type:"设计",tags:["AI中台","复用"],
+ q:"多条业务线都要用 AI 能力，怎么设计 AI 中台避免重复造轮子？",
+ intent:"考察平台化架构能力。5 年经验应能跳出单个项目视角。",
+ ans:[
+  "先判断该不该做中台：中台的代价是抽象成本和响应速度下降。判断标准——是否有 3 个以上业务线有共性需求，且这些需求的差异主要在「内容」而非「机制」。只有 1–2 个业务线时，宁可复制也不要中台（过早抽象的代价远大于重复）。",
+  "分层设计：① 基础设施层——LLM 网关（统一模型接入、路由、降级、成本归集、限流）；② 通用能力层——RAG 引擎（文档接入、解析、切分、检索、重排）、Agent 框架（工具注册、循环控制、状态管理）、提示词管理（版本、渲染、灰度）、评测平台（数据集、评测、报告）；③ 业务层——各业务线自己的提示词、知识库、Agent 编排、UI。中台只做第 ①② 层，第 ③ 层交给业务线，否则中台会变成瓶颈。",
+  "关键设计原则：机制上收、策略下放。中台提供「可配置的检索策略引擎」而不是「一套固定的检索流程」；提供「Agent 运行时」而不是「写死的 Agent」。业务线通过配置而非改中台代码来满足差异。",
+  "多租户与隔离：中台天然是多租户的——各业务线是逻辑租户，知识库、提示词、配额、trace 全部隔离。",
+  "接口契约：中台对外只暴露稳定的能力接口（如 /retrieve、/agent/run、/prompt/render），内部实现可替换（换向量库、换模型不影响业务线）。契约要版本化。",
+  "避免的常见失败模式：① 中台做成「大而全的通用框架」，配置项爆炸，业务线用不起来；② 中台团队闭门造车，做出来的东西业务线不需要（应对方式：第一个版本必须由一个真实业务线驱动，做出来立刻落地验证）；③ 中台成为瓶颈——业务线提需求要排期三个月，于是各业务线自己 fork 一份（应对方式：保留扩展点，允许业务线贡献插件/自定义节点）；④ 没有 SLA 和 owner，出问题互相推诿。",
+  "衡量中台是否成功的指标：接入业务线数、复用率（新增业务线需要新写的代码量）、需求平均交付时长、中台的可用率。",
+  "演进路径：不要一上来建中台。先在一个业务线做深做透 → 第二个业务线复用时抽取公共部分 → 第三个业务线时正式立中台。这条路径最稳妥。"
+ ],
+ follow:[
+  "业务线说中台满足不了需求，要自己 fork，你怎么处理？",
+  "中台的边界划在哪？什么该收什么不该收？",
+  "你怎么证明中台真的带来了收益？"
+ ],
+ pass:"知道要抽公共的 LLM 接入、RAG、提示词管理。",
+ good:"能给出三层分层与「机制上收、策略下放」的核心原则，清楚列出中台的四种常见失败模式与应对，给出成功度量指标，并提出「先做深一个业务线再抽取」的稳妥演进路径。",
+ red:"一上来就要建中台；中台做成配置项爆炸的通用框架；说不清该不该做中台的判断标准。"},
+
+{cat:"架构与运维",sub:"",diff:"基础",type:"概念",tags:["单体","微服务","架构演进"],
+ q:"AI 应用早期，单体还是微服务？怎么切分服务边界？",
+ intent:"考察架构务实度，避免为了微服务而微服务。",
+ ans:[
+  "结论先行：早期用模块化单体（Modular Monolith）。团队小于 10 人、需求变化快、边界还不清晰时，微服务的分布式复杂度（网络调用、数据一致性、分布式调试、部署编排）会严重拖慢迭代，而这些复杂度带来的收益在早期几乎为零。",
+  "但 AI 应用有两个天然的切分理由：① 资源特性差异巨大——文档解析（CPU 密集、可能跑很久）、embedding（GPU/CPU）、LLM 推理（GPU、长耗时）、主应用（IO 密集）。把它们混在一个进程里会导致资源争抢和扩缩容困难。② 故障隔离——解析服务 OOM 不该让整个产品不可用。",
+  "所以务实的切法：主应用（单体，包含会话、用户、编排）+ 独立的异步 worker（文档解析/索引/embedding）+ 独立的 LLM 网关（或进程内模块）+ 独立的推理服务（自建时）。这是「按资源与故障域切」，而不是「按业务实体切」。",
+  "演进触发条件（什么时候真正拆微服务）：团队规模扩大到多个小组独立交付、某模块需要独立扩缩容、某模块的可用性要求与主应用不同、单体部署时间过长影响迭代。有了这些信号再拆。",
+  "拆分原则：按「业务能力 + 数据所有权」拆，一个服务拥有自己的数据（不要多个服务共享一个数据库，这是分布式单体的典型反模式）。AI 场景常见的服务：会话服务、知识库服务（含索引 pipeline）、Agent/编排服务、模型网关、评测服务、计费服务。",
+  "进程内 vs 跨进程：不要把所有函数都变成 RPC。跨进程调用带来序列化开销、网络失败面、可观测复杂度。只有确实需要独立部署/扩缩容/隔离的才拆出去。",
+  "契约治理：服务间接口要有版本、有契约测试（consumer-driven contract），防止一方改动悄悄破坏另一方。"
+ ],
+ follow:[
+  "你们是从单体演进过来的还是一开始就微服务？后悔过吗？",
+  "共享数据库会有什么问题？",
+  "什么信号出现时你决定该拆了？"
+ ],
+ pass:"知道早期用单体，知道解析/推理要独立。",
+ good:"能给出模块化单体的明确结论 + 两个 AI 特有的切分理由（资源特性差异、故障隔离）+ 演进触发条件 + 按数据所有权拆分的原则，并指出「不要把所有函数变成 RPC」。",
+ red:"上来就微服务；或多个服务共享一个数据库；说不出为什么拆。"},
+
+{cat:"架构与运维",sub:"",diff:"进阶",type:"设计",tags:["可观测性","监控","告警"],
+ q:"日志、指标、链路追踪这三者有什么区别？AI 应用比传统应用多需要哪个维度？",
+ intent:"可观测性基础题，但要听出 AI 特有的成本与质量维度。",
+ ans:[
+  "日志（Logs）：离散的事件记录，回答「发生了什么」。适合排查具体个案。AI 场景要记录：完整的输入提示词、输出、token 数、模型版本、耗时、错误信息。",
+  "指标（Metrics）：可聚合的数值时间序列，回答「整体健康度如何、趋势怎样」。适合告警。AI 场景的核心指标：QPS、TTFT/P95 延迟、错误率、限流率、token 消耗与成本、缓存命中率。",
+  "链路追踪（Traces）：单次请求在多个组件间的完整路径，回答「这个请求在哪一步慢/错了」。AI 场景尤其重要——一次会话可能跨检索、重排、多次 LLM 调用、多个工具。",
+  "三者关系：指标发现问题 → 链路定位到环节 → 日志看细节。缺任何一个排查都会卡住。",
+  "AI 应用多出来的维度（关键）：① 成本维度——传统应用不关心单次请求花了多少钱，AI 应用必须按租户/功能/模型多维计量，且要能归因。这是全新的可观测对象。② 质量维度——传统应用的成功/失败是二元的，AI 应用是连续谱。需要把「点踩率、转人工率、拒答率、评测通过率」纳入监控。③ 版本维度——提示词版本、模型版本、检索配置版本、知识库版本，都要作为标签打在指标和 trace 上，否则线上指标波动时无法归因（「是换模型导致的还是改提示词导致的」）。这三条是 AI 可观测性区别于传统的核心。",
+  "AI 特有的 trace 结构：Span 类型包括 llm.call、retrieval、rerank、tool.call、agent.step；每个 Span 记录输入输出全文、token 与成本、prompt_version、model。",
+  "采样策略：全量存 trace 太贵（输入输出全文体积大）。用 tail-based sampling——出错的、慢的、被点踩的 100% 保留，正常的按 1%–10% 采样。",
+  "告警设计：不只告警技术指标（错误率、延迟），还要告警业务/成本指标——成本突增 300%、点踩率翻倍、某提示词版本的失败率上升、某知识库召回贡献为 0。这些才是 AI 应用真正会出事的地方。",
+  "隐私：日志和 trace 里含用户输入全文，必须脱敏 + 访问控制 + 留存期限，否则可观测系统会变成数据泄露源。"
+ ],
+ follow:[
+  "线上点踩率突然翻倍，你怎么排查？",
+  "trace 全量存储成本太高，你怎么采样？",
+  "日志里有用户隐私，你怎么处理？"
+ ],
+ pass:"能说出日志/指标/追踪的区别和用途。",
+ good:"能讲清三者的协作关系（指标发现 → 链路定位 → 日志看细节），并明确指出 AI 特有的成本、质量、版本三个新维度，给出 Span 类型设计、tail-based sampling 和业务/成本告警，以及 trace 的脱敏要求。",
+ red:"三者混为一谈；只监控 CPU 和错误率，完全没监控成本和质量；trace 里明文存全量用户输入且无访问控制。"},
+
+{cat:"架构与运维",sub:"",diff:"进阶",type:"设计",tags:["灰度发布","A/B","实验"],
+ q:"提示词、模型、检索策略这些 AI 组件怎么灰度发布和 A/B？",
+ intent:"AI 应用的灰度对象比传统应用多得多，且非代码。考察实验设计能力。",
+ ans:[
+  "灰度的对象（AI 特有）：提示词版本、模型（厂商 + 版本）、检索参数（top-k、阈值、融合权重）、chunking 策略、embedding 模型、Agent 的步数与工具集、temperature 等解码参数。这些都是「配置」而非「代码」，必须支持运行时切换，不能靠发版。",
+  "实现方式：把所有这些抽成「实验变量」，通过一个实验配置中心下发给运行时。每次请求根据分流规则决定使用哪组配置，并把实验组 ID 打到 trace 和指标上。",
+  "分流维度：按用户 ID 哈希（保证同一用户始终在同一组，体验一致）、按租户（B 端常用，给某些客户先体验）、按流量百分比、内部白名单。",
+  "影子流量（Shadow / Dark Launch）：新配置并行跑但不返回给用户，只收集输出与指标做对比。这是 AI 应用最安全的验证手段——因为它不冒用户体验风险，却能看到真实分布下的表现。",
+  "离线先行：任何灰度之前，先跑离线评测集。离线没通过的绝不进灰度——不要拿线上用户当小白鼠。",
+  "指标设计（分层）：① 离线指标（评测集通过率、各维度分数）；② 线上技术指标（延迟、错误率、成本）；③ 线上业务指标（任务完成率、点踩率、转人工率、用户留存）。三层都要看，只看一层会被误导（如「延迟降了是因为答案变短了，但完成率也降了」）。",
+  "统计显著性：A/B 需要足够的样本量和运行时长，要做显著性检验（不能看两天数据就下结论）。AI 输出方差大，所需样本量通常比传统 A/B 更大。要预先算好需要多少样本，避免「永远差一点点不显著」的摇摆。",
+  "回滚：灰度必须能秒级回滚（切配置指针，不需要发版、不需要重启）。且要有一键回滚的开关和明确的值班责任人。",
+  "常见坑：① 灰度期间用户被分到不同组导致体验不一致（要按用户哈希而非请求哈希）；② 同时灰度多个变量导致无法归因（一次只改一个变量，或用多变量实验设计）；③ 灰度时间太短，覆盖不到低频但重要的场景；④ 忘了成本指标——新模型效果好了 2% 但成本涨了 5 倍。"
+ ],
+ follow:[
+  "同时改了提示词和模型，效果变好了，怎么知道是哪个的功劳？",
+  "A/B 跑了三天，指标差 2%，能下结论吗？",
+  "灰度期间用户对同一问题得到不同答案，怎么处理？"
+ ],
+ pass:"知道要按用户哈希分流，知道要跑 A/B 对比。",
+ good:"能列出 AI 特有的六类灰度对象与实验配置中心的做法，提出影子流量与「离线先行」的安全策略，给出三层指标体系与显著性检验要求，并指出四个常见坑（尤其成本被忽略和多变量无法归因）。",
+ red:"改提示词靠发版；灰度按请求分流导致同一用户体验跳变；看两天数据就下结论。"},
+
+{cat:"架构与运维",sub:"",diff:"进阶",type:"设计",tags:["GPU","弹性伸缩","冷启动"],
+ q:"自建推理服务时，GPU 资源、弹性伸缩和冷启动怎么平衡成本？",
+ intent:"GPU 运维是 AI 全栈的独特领域。考察成本控制与容量规划。",
+ ans:[
+  "先算清楚单位成本：单卡每小时成本 ÷ 该卡在目标负载下的 token 吞吐 = 每千 token 的成本。这个数字要和商业 API 对比，才能判断自建是否真的划算。注意用「实际利用率下的吞吐」而不是理论峰值——生产环境 GPU 利用率通常只有 40%–70%。",
+  "冷启动是核心难题：加载一个 70B 模型到 GPU 需要几十秒到几分钟（读权重、初始化 KV Cache、CUDA 预热）。这意味着「按请求弹性扩容」在 GPU 场景基本不可行——等扩起来流量已经过了。",
+  "应对策略：① 预留常驻容量（应对基线流量）+ 弹性补充（应对波峰）+ 排队削峰（应对突发）；② 预热池——始终保持若干已加载模型的实例待命，扩容时从预热池取而不是从零启动；③ 模型权重优化——用更快的存储（本地 NVMe 而非网络盘）、预热的权重缓存、量化减小体积。",
+  "弹性策略：基于「队列长度 / GPU 利用率 / P95 延迟」而不是 CPU 做扩缩容指标（GPU 场景下 CPU 指标毫无意义）。扩容要提前（预测性扩容），缩容要保守（避免频繁扩缩导致的冷启动开销）。",
+  "提高利用率的手段：① 连续批处理 + 高 batch size；② 多模型共享 GPU（用小模型填大模型的空档，或用 MIG 把一张 A100 切成多份）；③ 时间分片——白天跑在线推理，夜间用空闲卡跑离线批处理（embedding、评测、微调）；④ 请求合并与排队优化。",
+  "成本优化组合：量化（INT8/FP8 在不明显掉点的情况下提升吞吐）、推测解码、选性价比更高的卡（如 L40S / A10 对某些场景比 H100 更划算）、Spot 实例跑离线任务（在线服务不能用）。",
+  "多模型部署的现实：不要为每个微调模型单独部署一套 GPU。用 LoRA 热插拔（vLLM 支持多 adapter 共享基座）或模型按需加载，否则成本会随模型数量线性爆炸。",
+  "容量规划：根据峰值 QPS × TTFT 目标 × 平均输出长度估算所需并发，反推 GPU 数量；留 30% 余量；定期（月度）复盘利用率并调整预留量。",
+  "监控：GPU 利用率、显存占用、KV Cache 命中率、队列等待时长、batch size 分布、每 token 成本——这些才是 GPU 服务该看的指标。"
+ ],
+ follow:[
+  "GPU 利用率只有 30%，你怎么提上去？",
+  "峰值流量是日常的 10 倍，你怎么规划容量？",
+  "多个微调模型怎么共享 GPU 而不爆炸成本？"
+ ],
+ pass:"知道 GPU 冷启动慢，知道要预留容量。",
+ good:"能给出单位成本的算法与实际利用率修正、预热池 + 常驻 + 削峰的冷启动应对、基于队列长度/利用率的扩缩容指标、四种提升利用率手段，以及 LoRA 热插拔避免多模型成本爆炸。",
+ red:"想按请求实时弹性扩容 GPU；用 CPU 指标做扩容；没算过单位成本就说自建省钱。"},
+
+{cat:"架构与运维",sub:"",diff:"进阶",type:"开放",tags:["事故复盘","SRE"],
+ q:"讲一次你经历过的 AI 应用线上事故，怎么复盘的？建立了什么防线？",
+ intent:"考察真实经验和复盘质量。是否把一次事故转化为系统能力。",
+ ans:[
+  "听什么：候选人是否真的经历过（细节是否具体）、是否只讲技术原因（好答案一定包含流程与设计层面的根因）、以及最后是否沉淀为可复用的防线。",
+  "好的复盘结构：时间线（什么时候发现、怎么发现、多久定位、多久恢复、影响范围）→ 直接原因 → 根因（为什么会发生，通常不止一层）→ 为什么没更早发现（监控盲区）→ 为什么恢复这么慢（预案缺失）→ 改进项（带 owner 和 deadline）。",
+  "AI 应用典型的事故类型：① 成本事故——某个循环 bug 或 Agent 失控，一夜烧掉几万；② 质量事故——提示词改动或模型静默升级导致答案质量断崖，用户投诉；③ 数据泄露——RAG 忘记租户过滤、缓存 key 不含租户、trace 未脱敏；④ 依赖事故——上游模型服务限流/宕机，无降级导致全站不可用；⑤ 延迟事故——某个大文档检索拖垮整个服务。",
+  "好答案应该体现的防线（按层次）：① 预防——设计层的强制约束（租户过滤在数据访问层强制、幂等、权限最小化）；② 检测——监控与告警（成本突增、质量指标下滑、错误率上升），很多事故是「用户先发现的」，说明监控缺失；③ 止损——熔断降级、一键回滚、预算硬上限、功能开关；④ 恢复——预案与演练，明确谁有权决策切换；⑤ 免疫——把事故的测试用例加入评测集/回归测试，确保不再发生。",
+  "复盘文化：Blameless（不追责个人）——如果复盘结论是「某某不小心」，说明没找到真正的系统原因。好的结论应该指向「流程或系统允许了这件事发生」。",
+  "改进项的可验证性：改进不能写成「加强测试」「提高警惕」这种无法验证的话，而要写成可检查的具体动作（如「在 CI 中加入跨租户越权的红线用例」「成本看板增加按功能的日环比告警」）。",
+  "红旗信号：把事故全归咎于外部（模型厂商、用户操作）、没有量化影响、改进项没有跟进闭环。"
+ ],
+ follow:[
+  "这次事故影响了多少用户？损失多少？怎么量化的？",
+  "改进项后来真的落地了吗？怎么确认的？",
+  "如果重来一次，你会在架构的哪个环节提前设防？"
+ ],
+ pass:"能讲出一个具体的事故和大致的处理过程。",
+ good:"有清晰的时间线与量化影响，根因分析到流程/设计层而非个人，改进项包含预防/检测/止损/恢复/免疫五层防线且可验证、有闭环，并体现 blameless 文化。",
+ red:"讲不出具体经历；把原因全推给外部或同事；改进项是「以后注意」这种空话。"},
+
+/* ============ J. 软技能与开放 ============ */
+{cat:"软技能",sub:"",diff:"进阶",type:"开放",tags:["项目决策","技术选型"],
+ q:"讲一个你主导的 AI 项目：最难的技术决策是什么？放弃了什么？如果重来会怎么选？",
+ intent:"考察技术决策的深度与反思能力。5 年经验必须能讲清 trade-off。",
+ ans:[
+  "听什么：① 候选人是否真的是「主导」而非「参与」（能说清为什么这么选、谁反对、怎么说服的）；② 是否讲出了真实的两难（如果说「一切都很顺利」通常说明没做过复杂项目）；③ 是否有事后的反思与修正。",
+  "好的回答结构：背景与目标（业务约束、时间、人力）→ 候选方案（至少两个）→ 决策依据（数据、约束、风险）→ 执行结果 → 事后反思（哪里判断对了、哪里错了、如果重来怎么改）。",
+  "加分点：讲得出「主动放弃的东西」——比如放弃了自建模型选择 API、放弃了多 Agent 选择单 Agent、放弃了完美方案选择先上线。能说明放弃的理由（成本、时间、团队能力）是成熟的表现。",
+  "加分点：决策时用数据支撑（做了 PoC、跑了评测、做了对比实验），而不是「我觉得」。",
+  "加分点：考虑了非技术因素——团队能力、运维负担、业务节奏、合规要求。纯技术最优解在现实中往往不是正确解。",
+  "加分点：承认判断失误并说明如何修正。能从失败中学到东西的人比从没失败过的人更可靠。",
+  "红旗：① 全程讲业务价值但讲不清自己的技术贡献；② 把决策归因于「领导要求」而没有自己的判断；③ 说不出任何代价或放弃；④ 技术名词堆砌但讲不出为什么选；⑤ 事后认为自己全对、没有任何反思。"
+ ],
+ follow:[
+  "当时有没有人反对？你怎么说服（或被说服）的？",
+  "这个决策现在回头看，代价是什么？",
+  "如果给你两倍时间和两倍人力，你会换方案吗？"
+ ],
+ pass:"能讲清一个项目的背景、方案和自己在其中的角色。",
+ good:"能讲出真实的两难与明确的 trade-off，有数据支撑的决策过程，考虑了团队/成本/合规等非技术因素，并主动说明放弃了什么以及事后的反思修正。",
+ red:"只讲业务效果不讲技术决策；说不出任何代价；把决策全归因于他人；零反思。"},
+
+{cat:"软技能",sub:"",diff:"进阶",type:"开放",tags:["需求沟通","期望管理"],
+ q:"业务方要求「AI 准确率达到 99%」，你怎么沟通？",
+ intent:"AI 项目最常见的期望管理难题。考察沟通与技术判断的结合。",
+ ans:[
+  "先不要答应也不要直接拒绝。99% 这个数字本身需要先被拆解——「准确率」在不同场景的定义完全不同。",
+  "第一步：定义指标。和业务方一起明确「什么算对」。分类任务有明确答案（容易定义）；生成式任务（客服回答、摘要、写作）没有唯一正确答案，需要定义 rubric（事实正确、覆盖完整、语气合适、无幻觉）并约定判定方式（人工标注 / LLM 裁判 / 用户点踩）。",
+  "第二步：摸清基线。在真实数据上测当前水平。关键是要用真实分布的样本，而不是挑几个好例子。基线往往远低于预期（比如 60%），这个数字是后续所有沟通的基础。",
+  "第三步：把「准确率」翻译成可决策的选项。核心话术是给选择而不是给拒绝——「99% 在当前数据和成本下做不到，但我们有三个选项：A) 85% 准确率全自动，覆盖 100% 流量；B) 98% 准确率 + 15% 转人工，覆盖全部流量；C) 99% 准确率但只覆盖 30% 的简单场景，其余转人工。你选哪个？」",
+  "关键技术手段：置信度分级 + 人工兜底。不追求每个都答对，而是让模型「知道自己不知道」，低置信度的转人工。这样整体准确率可以提到很高，代价是一部分转人工率。这是把「不可能的 99% 全自动」变成「可行的 99% + 部分人工」的通用解法。",
+  "第四步：约束边界要讲清楚——「99% 是在这个评测集、这批数据、当前知识范围下的数字。业务扩展、知识更新、场景变化后需要重新评估。」避免把一次性数字变成永久承诺。",
+  "第五步：建立持续度量的机制而不是一次性验收——上线后用真实反馈持续跟踪，定期同步。这样准确率变成一个共同改进的过程，而不是一次性的交付验收。",
+  "红旗：直接答应 99%（做不到会失信）；或直接说「做不到」而不给替代方案；或拒绝沟通说「这个需求不合理」。"
+ ],
+ follow:[
+  "业务方坚持 99% 且不允许转人工，你怎么办？",
+  "你怎么定义「答对了」？谁来判定？",
+  "上线后准确率从 85% 掉到 70%，你怎么向业务方解释和处理？"
+ ],
+ pass:"知道要先定义指标、测基线。",
+ good:"能给出「定义指标 → 摸清基线 → 给选项而非拒绝 → 置信度分级+人工兜底 → 明确边界 → 持续度量」的完整沟通路径，并把准确率问题转化为转人工率与覆盖率的业务权衡。",
+ red:"直接答应或强硬拒绝；不定义指标就开始做；承诺一个没有边界的数字。"},
+
+{cat:"软技能",sub:"",diff:"进阶",type:"开放",tags:["需求判断","场景选择"],
+ q:"你怎么判断一个需求该不该上 AI？举一个你判断「不该用 AI」的例子。",
+ intent:"反向判断力比正向更能体现水平。考察是否会为了用 AI 而用 AI。",
+ ans:[
+  "先给判断框架（四个问题）：① 有没有确定性的规则解法？如果有且规则能枚举 → 用规则，不要用 AI（更快、更准、更便宜、可解释、可测试）。② 是否需要 100% 准确且出错代价极高？如金额计算、库存扣减、法律条款生成 → 不该让生成式模型做最终决策，最多做辅助。③ 输入是否模糊、多样、需要理解语义？是 → AI 有价值。④ 是否容忍不确定性？如果用户完全无法接受错误 → 需要人工兜底或改用确定性方案。",
+  "不该用 AI 的典型场景（能举出具体例子是加分项）：① 精确计算——用 AI 算工资、算税费、做统计聚合（应该用代码/SQL）；② 重复性结构化任务——固定格式的字段提取，用正则/模板就能解决；③ 高频简单的规则判断——如「订单金额大于 100 且是新用户」，一条 if 就够了，用 LLM 是浪费且更慢更贵；④ 有严格 SLA 和可解释要求的场景——如风控拒绝贷款，必须给出明确规则依据，LLM 的黑盒不可接受；⑤ 数据量极小且模式固定的场景——几百条固定模板的映射，写规则更快。",
+  "该用 AI 的信号：输入是自然语言且表达多样、需要理解语义或意图、需要生成开放内容、规则无法穷举、人工处理成本高且量大、允许一定误差或有人工复核环节。",
+  "成本视角：算一笔账——人工处理一次的成本 × 量 vs AI 的单位成本 × 量 + 错误导致的返工成本 + 人工复核成本。很多场景算完会发现 AI 并不划算（尤其是低频、高准确率要求的场景）。",
+  "折中方案（常常是最优解）：AI 做前置处理/辅助，人来最终确认（copilot 模式）；或 AI 处理高置信度部分，不确定性高的走规则或人工。",
+  "红旗：认为所有需求都能上 AI；举不出任何一个「不该用 AI」的例子；或判断只看技术可行性不看成本与风险。"
+ ],
+ follow:[
+  "你拒绝过业务方的 AI 需求吗？怎么说服的？",
+  "一个需求用规则能做到 90%，用 AI 能做到 95%，你选哪个？",
+  "AI 做辅助、人做决策（copilot）和 AI 全自动，你怎么选？"
+ ],
+ pass:"能说出几个不适合 AI 的场景，知道规则优先。",
+ good:"能给出四问判断框架 + 五类不该用的典型场景（带具体例子）+ 该用的信号 + 成本账的算法，并提出「AI 辅助 + 人决策」的折中方案和置信度分流。",
+ red:"认为 AI 什么都能做；举不出不该用的例子；判断只看技术可行性不看成本与风险。"},
+
+{cat:"软技能",sub:"",diff:"进阶",type:"开放",tags:["技术推动","协作"],
+ q:"不确定性强的技术方案（比如引入 Agent），你怎么推动落地？",
+ intent:"考察影响力与推进能力。5 年经验不能只会被动接需求。",
+ ans:[
+  "先降低不确定性再谈推动。AI 方案之所以难推动，是因为「效果说不准」。所以第一步永远是用最小成本把不确定性量化——做一个 PoC，在真实数据上跑出数字。有了数字，讨论就从「你觉得行不行」变成「85% 通过率，够不够」。",
+  "小步验证：不要一上来提一个宏大的方案。切成阶段——第一阶段只做一个场景、只服务一小部分用户、只读不写。用最小的风险拿到真实的反馈和数据。",
+  "用数据说话的推进方式：准备一份包含「现状痛点（量化）→ 方案 → 预期收益（量化）→ 成本 → 风险与兜底 → 验证计划」的一页纸。决策者需要的是可判断的信息，不是技术热情。",
+  "争取盟友：先说服一个业务方（找一个痛点最强烈、愿意配合的），做出成果后用它说话，比自上而下推更容易。同时提前找架构/安全/法务对齐（AI 项目常卡在合规和安全评审），不要等到最后才被发现拦下。",
+  "管理预期与风险：主动说明「可能做不成」，并约定验收标准和止损点（如「两周内 PoC 达不到 70% 就放弃这个方向」）。主动设置失败条件反而更容易获得支持，因为它降低了对方的决策风险。",
+  "应对阻力：理解阻力的来源——通常不是「新技术不好」，而是「运维负担」「出问题谁负责」「影响现有排期」。针对具体顾虑给方案（谁 oncall、怎么回滚、灰度多久），比强调技术先进性有效得多。",
+  "落地后的收尾：量化收益并主动同步（上线后节省了多少人力/提升了多少指标），让当初支持你的人有交代，也为下一次推动积累信用。",
+  "红旗：靠「这是趋势/竞品都在做」来推动；没有 PoC 就要大资源；回避风险和失败可能性；上线后不追踪收益。"
+ ],
+ follow:[
+  "团队里有人强烈反对，你怎么处理？",
+  "PoC 效果不及预期，你是放弃还是继续要资源？",
+  "上线后你怎么证明这件事做对了？"
+ ],
+ pass:"知道要做 PoC 验证、小步试。",
+ good:"能给出「PoC 量化不确定性 → 小步只读场景 → 一页纸决策材料 → 找盟友+提前对齐安全法务 → 主动设止损点 → 针对具体顾虑给方案 → 上线后量化收益」的完整推进路径。",
+ red:"靠「技术趋势」说服；没有验证就要大资源；不设止损点；上线后不追踪收益。"},
+
+{cat:"软技能",sub:"",diff:"基础",type:"开放",tags:["技术跟进","学习方法"],
+ q:"你如何跟进 AI 领域的快速变化？最近在关注什么？",
+ intent:"考察学习习惯与技术敏感度。AI 领域半年不学就落后。",
+ ans:[
+  "听什么：是否有稳定的信息渠道（而不是刷到什么看什么）、是否能区分「值得跟的」和「噪音」、以及是否有把新东西落到实践的习惯。",
+  "好的信息源结构：① 一手信息——论文（arXiv，关注 cs.CL/cs.AI）、厂商官方发布与文档（OpenAI/Anthropic/Google/DeepSeek/Qwen 的 blog 和 model card）、开源项目 release note；② 二手信息——高质量的 Newsletter（如 Import AI、The Batch）、技术社区（Hugging Face、Reddit r/LocalLLaMA、中文社区）、会议（NeurIPS/ICML/ACL 的 workshop）；③ 实践——自己动手跑，这是最可靠的学习方式。",
+  "过滤噪音的方法（重要）：AI 领域每天都有大量「新突破」，但大部分活不过三个月。判断标准：① 有没有可复现的结果（有 benchmark、有开源代码）；② 是不是解决了一个真实的痛点；③ 在你的场景下是否适用。很多热点在特定场景根本用不上。",
+  "深度与广度的平衡：基础原理（Transformer、注意力、RLHF、推理优化）是长期不变的，值得深挖；具体工具和框架变化快，知道「有哪些、各自解决什么问题」即可，用到时再深入。不要把时间都花在追新框架上。",
+  "落地习惯：看到有价值的东西要动手验证——在自己的评测集上跑一遍，而不是只看别人的结论。建立自己的「技术雷达」（哪些在评估中、哪些已采用、哪些该淘汰）。",
+  "红旗：① 说不出任何具体的信息源；② 只关注模型排行榜（「又出新模型了」）；③ 最近关注的东西和岗位完全无关；④ 只关注工具框架，对原理一无所知；⑤ 说「没时间学」（AI 领域这个说法基本等于放弃成长）。"
+ ],
+ follow:[
+  "最近有哪个新技术你是判断「不值得跟」的？为什么？",
+  "你看到一个新模型，怎么快速判断要不要在你的场景里试？",
+  "你最近把学到的什么东西真正用到生产里了？"
+ ],
+ pass:"有关注行业动态，能说出几个信息源和最近的关注点。",
+ good:"有结构化的信息源（一手/二手/实践三层）、明确的噪音过滤标准、深度与广度的平衡策略，以及「在自己的评测集上验证」的落地习惯，能说出具体最近关注的技术点和自己的判断。",
+ red:"说不出信息源；只追模型排行榜；最近关注的内容与岗位无关；或明确表示没时间学习。"},
+
+{cat:"软技能",sub:"",diff:"高阶",type:"开放",tags:["团队组建","分工"],
+ q:"如果让你从 0 组建一个 AI 应用团队，你怎么分工？先招谁？",
+ intent:"考察对 AI 应用团队协作全貌的理解，以及角色边界的认知。",
+ ans:[
+  "先说认知：AI 应用团队和算法团队是完全不同的东西。AI 应用团队的核心不是训模型，而是「把不确定的模型能力变成可靠的产品」。所以不要一上来招算法科学家。",
+  "先招谁（有共识的答案）：第一个人应该是「能端到端交付的 AI 全栈工程师」——能把模型能力接进来、做出可用产品、能处理流式/异步/成本/评测。因为早期最重要的是快速验证场景可行性，需要的是交付速度而不是某个方向的深度。",
+  "早期最小团队（3–4 人）：① AI 全栈/应用工程师（主力，负责编排层、RAG、Agent、前后端）；② 后端/平台工程师（负责稳定性、成本、网关、数据 pipeline）；③ 产品（兼做提示词设计与评测集运营，这个角色在 AI 团队里比传统团队更关键——因为「需求定义」和「质量标准」高度耦合）；④ 可选：前端（如果交互复杂）。",
+  "关键角色辨析：① 提示词工程师 / AI 交互设计师——在 AI 团队里这个角色真实存在且有很高价值，负责提示词体系、评测标准、交互范式；② 数据/知识工程师——负责文档解析、知识库治理，是被严重低估的角色（知识库质量直接决定产品上限）；③ 评测/质量——负责评测体系与 badcase 闭环，成熟团队必须专职；④ 算法工程师（微调）——只有在明确需要微调时才招，不要提前。",
+  "不要的角色（早期）：专门的 MLOps（用托管服务即可）、专门的算法研究员（除非做模型本身）、专门的数据标注团队（先用业务专家兼职 + 少量外包）。",
+  "分工原则：按「能力层」而不是「技术栈」分工——知识层、编排层、网关层、应用层各自有 owner，每层内部允许一个人横跨前后端。这样避免出现「前端等后端、后端等算法」的串联阻塞。",
+  "协作机制：① 共享的评测集与指标看板（全团队对齐「什么叫好」）；② 每周 badcase 复盘会（这是 AI 团队最有价值的例会）；③ 提示词与配置的变更评审；④ 成本看板全员可见（让每个人都对成本有感知）。",
+  "能力建设的优先级：先建立评测体系，再谈技术优化。没有评测的团队会陷入无休止的「感觉变好了/变差了」的争论。"
+ ],
+ follow:[
+  "预算只够招一个人，你招什么背景的人？",
+  "提示词设计这个活儿，你安排给工程师还是产品？为什么？",
+  "团队里要不要设专职的评测角色？什么时候设？"
+ ],
+ pass:"能说出需要全栈、后端、产品等角色和大致分工。",
+ good:"能明确指出 AI 应用团队 ≠ 算法团队，给出「先招端到端全栈」的判断与理由，辨析提示词/知识工程/评测这些关键角色，说明早期不该招的角色，并提出按能力层分工 + 评测体系先行的协作机制。",
+ red:"一上来就要招算法科学家/研究员；分工按前后端技术栈切导致串联阻塞；没有评测和质量角色。"}
+];
+
+const CATCLS={"LLM应用工程":"cat-llm","前端":"cat-fe","后端与数据":"cat-be","架构与运维":"cat-infra","软技能":"cat-soft"};
+const F={cat:"",diff:"",type:"",sub:""};
+let kw="", onlyUndone=false;
+const done=new Set(JSON.parse(localStorage.getItem("aiq_done")||"[]"));
+
+const list=document.getElementById("list");
+const empty=document.getElementById("empty");
+const sCount=document.getElementById("sCount");
+const sHint=document.getElementById("sHint");
+
+var AMP=String.fromCharCode(38);
+function esc(s){return String(s).replace(/&/g,AMP+"amp;").replace(/</g,AMP+"lt;").replace(/>/g,AMP+"gt;");}
+
+function match(it){
+  if(F.cat && it.cat!==F.cat) return false;
+  if(F.diff && it.diff!==F.diff) return false;
+  if(F.type && it.type!==F.type) return false;
+  if(F.sub && it.sub!==F.sub) return false;
+  if(onlyUndone && done.has(it.q)) return false;
+  if(kw){
+    const k=kw.toLowerCase();
+    const hay=(it.q+" "+it.cat+" "+it.sub+" "+it.diff+" "+it.type+" "+it.tags.join(" ")+" "+it.ans.join(" ")).toLowerCase();
+    if(hay.indexOf(k)<0) return false;
+  }
+  return true;
+}
+
+function render(){
+  const items=DATA.filter(match);
+  sCount.textContent=items.length;
+  let hint="";
+  const parts=[];
+  if(F.cat) parts.push(F.cat); if(F.sub) parts.push(F.sub);
+  if(F.diff) parts.push(F.diff); if(F.type) parts.push(F.type+"题");
+  if(kw) parts.push("关键词「"+kw+"」");
+  if(onlyUndone) parts.push("未问过");
+  sHint.textContent=parts.length?(" · "+parts.join(" / ")):"";
+  empty.style.display=items.length?"none":"block";
+  list.innerHTML=items.map(it=>{
+    const i=DATA.indexOf(it);
+    const isDone=done.has(it.q);
+    const tags=it.tags.map(t=>'<span class="tag">'+esc(t)+'</span>').join("");
+    return '<div class="card'+(isDone?" done":"")+'" data-i="'+i+'">'
+      +'<div class="qhead"><div class="num">'+(i+1)+'</div><div class="qmain">'
+      +'<div class="qtext">'+esc(it.q)+'</div>'
+      +'<div class="qmeta"><span class="tag cat '+CATCLS[it.cat]+'">'+esc(it.cat)+'</span>'
+      +(it.sub?'<span class="tag">'+esc(it.sub)+'</span>':"")
+      +'<span class="tag diff-'+it.diff+'">'+it.diff+'</span>'
+      +'<span class="tag">'+it.type+'题</span>'+tags+'</div></div>'
+      +'<div class="arrow">▶</div></div>'
+      +'<div class="qbody">'
+        +'<div class="sec intent"><h4>考察意图</h4><p>'+esc(it.intent)+'</p></div>'
+        +'<div class="sec ans"><h4>参考答案要点</h4><ul>'+it.ans.map(a=>"<li>"+esc(a)+"</li>").join("")+'</ul></div>'
+        +'<div class="sec follow"><h4>追问链</h4><ul>'+it.follow.map(a=>"<li>"+esc(a)+"</li>").join("")+'</ul></div>'
+        +'<div class="sec rubric"><h4>评分要点</h4><div class="rgrid">'
+          +'<div class="rbox pass"><div class="rt">及格线（3 年水平）</div><div class="rd">'+esc(it.pass)+'</div></div>'
+          +'<div class="rbox good"><div class="rt">期望线（5 年应达到）</div><div class="rd">'+esc(it.good)+'</div></div>'
+          +'<div class="rbox red"><div class="rt">红旗信号（扣分）</div><div class="rd">'+esc(it.red)+'</div></div>'
+        +'</div></div>'
+        +'<div class="actions"><button class="btn act-done">'+(isDone?"标记为未问":"标记为已问")+'</button></div>'
+      +'</div></div>';
+  }).join("");
+}
+
+list.addEventListener("click",e=>{
+  const head=e.target.closest(".qhead");
+  if(head){ head.parentElement.classList.toggle("open"); return; }
+  const btn=e.target.closest(".act-done");
+  if(btn){
+    const card=btn.closest(".card");
+    const it=DATA[+card.dataset.i];
+    if(done.has(it.q)) done.delete(it.q); else done.add(it.q);
+    localStorage.setItem("aiq_done",JSON.stringify([...done]));
+    render();
+  }
+});
+
+document.querySelectorAll(".chip").forEach(ch=>{
+  ch.addEventListener("click",()=>{
+    const f=ch.dataset.f;
+    document.querySelectorAll('.chip[data-f="'+f+'"]').forEach(c=>c.classList.remove("on"));
+    ch.classList.add("on");
+    F[f]=ch.dataset.v;
+    render();
+  });
+});
+
+document.getElementById("q").addEventListener("input",e=>{ kw=e.target.value.trim(); render(); });
+
+let allOpen=false;
+document.getElementById("btnExpand").addEventListener("click",function(){
+  allOpen=!allOpen;
+  document.querySelectorAll(".card").forEach(c=>c.classList.toggle("open",allOpen));
+  this.textContent=allOpen?"全部收起":"全部展开";
+  this.classList.toggle("on",allOpen);
+});
+
+document.getElementById("btnDone").addEventListener("click",function(){
+  onlyUndone=!onlyUndone; render(); this.classList.toggle("on",onlyUndone);
+});
+
+document.getElementById("btnReset").addEventListener("click",function(){
+  done.clear(); localStorage.removeItem("aiq_done"); render();
+});
+
+const toTop=document.getElementById("toTop");
+window.addEventListener("scroll",()=>{ toTop.style.display=window.scrollY>400?"flex":"none"; });
+toTop.addEventListener("click",()=>window.scrollTo({top:0,behavior:"smooth"}));
+
+document.getElementById("mTotal").textContent="共 "+DATA.length+" 题";
+render();
+</script>
+</body>
+</html>
