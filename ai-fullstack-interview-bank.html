@@ -33,7 +33,8 @@
   /* ---------- Toolbar ---------- */
   .toolbar{position:sticky;top:0;z-index:50;background:var(--surface);
     border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:18px;
-    box-shadow:0 1px 3px rgba(16,24,40,.05)}
+    box-shadow:0 1px 3px rgba(16,24,40,.05);transition:padding .25s ease,margin-bottom .25s ease}
+  .toolbar.collapsed{padding:8px 12px;margin-bottom:12px}
   .search-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
   #q{flex:1;min-width:220px;padding:9px 13px;border:1px solid var(--border-strong);border-radius:8px;
     font-size:14px;outline:none;font-family:inherit;background:#fff;color:var(--text)}
@@ -42,8 +43,23 @@
     cursor:pointer;font-size:13px;font-family:inherit;color:var(--text-sub);white-space:nowrap}
   .btn:hover{background:#f2f4f7;color:var(--text)}
   .btn.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  .btn.ghost{color:var(--text-mute);padding:8px 10px}
+  .btn.ghost .chev{display:inline-block;transition:transform .25s ease;font-size:11px}
+  .btn.ghost.open .chev{transform:rotate(180deg)}
 
-  .filters{margin-top:12px;display:flex;flex-wrap:wrap;gap:16px}
+  .filters{margin-top:12px;display:flex;flex-wrap:wrap;gap:16px;
+    max-height:460px;opacity:1;overflow:hidden;
+    transition:max-height .28s ease,opacity .22s ease,margin-top .28s ease}
+  .toolbar.collapsed .filters{max-height:0;opacity:0;margin-top:0}
+  @media(max-width:760px){
+    .toolbar{padding:10px 12px}
+    .toolbar.collapsed{padding:8px 10px;margin-bottom:10px}
+    .toolbar.collapsed .search-row .btn:not(.ghost){display:none}
+    .search-row{gap:8px}
+  }
+  @media(prefers-reduced-motion:reduce){
+    .filters,.toolbar,.btn.ghost .chev{transition:none}
+  }
   .fgroup{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
   .flabel{font-size:12px;color:var(--text-mute);margin-right:2px}
   .chip{padding:4px 11px;border:1px solid var(--border-strong);background:#fff;border-radius:16px;
@@ -144,8 +160,9 @@
       <button class="btn" id="btnDone">只看未问过</button>
       <button class="btn" id="btnReset">清空标记</button>
       <button class="btn" onclick="window.print()">打印</button>
+      <button class="btn ghost open" id="btnCollapse" aria-expanded="true" aria-controls="filters" aria-label="收起筛选栏"><span class="chev">▾</span><span id="btnCollapseLbl">收起</span></button>
     </div>
-    <div class="filters">
+    <div class="filters" id="filters">
       <div class="fgroup"><span class="flabel">模块</span>
         <span class="chip on" data-f="cat" data-v="">全部</span>
         <span class="chip" data-f="cat" data-v="LLM应用工程">LLM应用工程</span>
@@ -1864,6 +1881,30 @@ document.getElementById("btnDone").addEventListener("click",function(){
 document.getElementById("btnReset").addEventListener("click",function(){
   done.clear(); localStorage.removeItem("aiq_done"); render();
 });
+
+/* ---------- Toolbar collapse: manual toggle + auto-collapse on scroll ---------- */
+const toolbar=document.querySelector(".toolbar");
+const btnCollapse=document.getElementById("btnCollapse");
+const btnCollapseLbl=document.getElementById("btnCollapseLbl");
+let userOverride=false;
+const COLLAPSE_AT=120,EXPAND_AT=80; // hysteresis: deadband 80–120 avoids flicker
+function setCollapsed(on){
+  if(toolbar.classList.contains("collapsed")===on) return;
+  toolbar.classList.toggle("collapsed",on);
+  btnCollapse.classList.toggle("open",!on);
+  btnCollapse.setAttribute("aria-expanded",String(!on));
+  btnCollapse.setAttribute("aria-label",on?"展开筛选栏":"收起筛选栏");
+  btnCollapseLbl.textContent=on?"筛选":"收起";
+}
+btnCollapse.addEventListener("click",()=>{
+  userOverride=true; // manual wins; auto re-engages only after scrolling back near the top
+  setCollapsed(!toolbar.classList.contains("collapsed"));
+});
+window.addEventListener("scroll",()=>{
+  const y=window.scrollY;
+  if(y<EXPAND_AT){ userOverride=false; setCollapsed(false); }
+  else if(y>COLLAPSE_AT&&!userOverride){ setCollapsed(true); }
+},{passive:true});
 
 const toTop=document.getElementById("toTop");
 window.addEventListener("scroll",()=>{ toTop.style.display=window.scrollY>400?"flex":"none"; });
